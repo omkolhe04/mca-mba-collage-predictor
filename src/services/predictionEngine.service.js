@@ -218,13 +218,33 @@ async function runEngine(prediction) {
   const eligibleCategoryById = new Map(eligibleCategories.map((c) => [c.id, c]));
   const eligibleCategoryCodes = eligibleCategories.map((c) => c.code);
 
-  const colleges = await collegeRepository.findAllActiveByExamType(prediction.exam_type_id);
-  if (colleges.length === 0) {
+  const allActiveColleges = await collegeRepository.findAllActiveByExamType(prediction.exam_type_id);
+  if (allActiveColleges.length === 0) {
     return buildEmptySnapshot({
       eligibleCategoryCodes,
       roundCodes,
       examTypeCode: examType ? examType.code : null,
       note: 'No colleges have been loaded for this exam yet.',
+    });
+  }
+
+  // Admission University is a search/display preference — it
+  // restricts WHICH colleges are even considered, scoped to the
+  // one university the student wants to study at. It has no
+  // bearing on HU/OHU eligibility, which still compares Home
+  // University against each college's own university exactly as
+  // before (see isRowEligible below) — this filter only narrows
+  // the candidate pool upstream of that existing comparison.
+  const colleges = prediction.admission_university_id
+    ? allActiveColleges.filter((c) => c.university_id === prediction.admission_university_id)
+    : allActiveColleges;
+
+  if (colleges.length === 0) {
+    return buildEmptySnapshot({
+      eligibleCategoryCodes,
+      roundCodes,
+      examTypeCode: examType ? examType.code : null,
+      note: 'No colleges are affiliated with the selected Admission University for this exam yet.',
     });
   }
   const collegeById = new Map(colleges.map((c) => [c.id, c]));

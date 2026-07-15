@@ -230,10 +230,18 @@
 .vn-stat-number {
   font-family: var(--vn-font-display);
   font-weight: 800;
-  font-size: 2.5rem;
+  /* Fluid sizing instead of a fixed size — a long formatted
+     number like "1,00,000+" needs to be noticeably smaller than
+     a short one like "500+" on narrow phones, or it overflows
+     its card. clamp() scales smoothly between a mobile-safe
+     minimum and the original desktop size, rather than jumping
+     at a fixed breakpoint. */
+  font-size: clamp(1.5rem, 5vw + 0.5rem, 2.5rem);
   color: var(--vn-ink);
   letter-spacing: -0.02em;
   line-height: 1.1;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* ---------------------------------------------------------
@@ -266,6 +274,7 @@
   border-radius: var(--vn-radius-lg);
   padding: var(--vn-space-4);
   text-align: center;
+  overflow: hidden;
   transition: transform var(--vn-duration-base) var(--vn-ease), box-shadow var(--vn-duration-base) var(--vn-ease);
 }
 
@@ -966,6 +975,42 @@
   .vn-animate-fade-in,
   .vn-animate-slide-up,
   .vn-animate-scale-in {
+    animation: none !important;
+  }
+}
+
+/* ---------------------------------------------------------
+   Spinner — a clean rotating ring, used on the prediction
+   form's submit button while the server computes a real (if
+   brief) result. Deliberately understated: a plain rotating
+   ring, not a bouncing/pulsing "funky" animation.
+   --------------------------------------------------------- */
+.vn-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: var(--vn-white);
+  border-radius: 50%;
+  animation: vn-spin 700ms linear infinite;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+@keyframes vn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.vn-btn-loading {
+  opacity: 0.85;
+  cursor: wait;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vn-spinner {
     animation: none !important;
   }
 }

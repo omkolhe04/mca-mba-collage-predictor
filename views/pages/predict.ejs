@@ -282,9 +282,13 @@
       </div>
 
       <div class="d-grid">
-        <button type="submit" class="btn btn-vn-primary btn-lg vn-magnetic vn-ripple-container d-inline-flex align-items-center justify-content-center gap-2">
-          Get My Prediction
-          <%- icon('arrow-right', { class: 'vn-icon-sm' }) %>
+        <button
+          type="submit"
+          id="predictionSubmitBtn"
+          class="btn btn-vn-primary btn-lg vn-magnetic vn-ripple-container d-inline-flex align-items-center justify-content-center gap-2"
+        >
+          <span id="predictionSubmitLabel">Get My Prediction</span>
+          <span id="predictionSubmitIcon"><%- icon('arrow-right', { class: 'vn-icon-sm' }) %></span>
         </button>
       </div>
     </form>

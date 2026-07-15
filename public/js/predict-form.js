@@ -115,8 +115,28 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!form.checkValidity()) {
         event.preventDefault();
         event.stopPropagation();
+        form.classList.add('was-validated');
+        return;
       }
       form.classList.add('was-validated');
+
+      // Show a premium loading state on the submit button while
+      // the server computes the actual prediction (a real, if
+      // brief, wait — not instant). The form still submits
+      // normally right after this; the button never needs to be
+      // reverted afterward, since a full page navigation follows
+      // regardless of success or a server-side validation error.
+      const submitBtn = document.getElementById('predictionSubmitBtn');
+      const submitLabel = document.getElementById('predictionSubmitLabel');
+      const submitIcon = document.getElementById('predictionSubmitIcon');
+      if (submitBtn && submitLabel) {
+        submitBtn.disabled = true;
+        submitBtn.classList.add('vn-btn-loading');
+        submitLabel.innerHTML = '<span class="vn-spinner" aria-hidden="true"></span> Calculating your prediction&hellip;';
+        if (submitIcon) {
+          submitIcon.style.display = 'none';
+        }
+      }
     },
     false
   );
