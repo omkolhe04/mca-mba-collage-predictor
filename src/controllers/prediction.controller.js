@@ -7,6 +7,7 @@ const pdfReportService = require('../services/pdfReport.service');
 const userService = require('../services/user.service');
 const examTypeRepository = require('../repositories/examType.repository');
 const collegeRepository = require('../repositories/college.repository');
+const universityRepository = require('../repositories/university.repository');
 const { setUserSessionCookie } = require('../utils/userSession');
 const { generateRoundCodes, CHANCE_BUCKET_META } = require('../utils/constants');
 const { url } = require('../utils/url');
@@ -164,6 +165,15 @@ async function showResult(req, res) {
   const examType = await examTypeRepository.findById(resultView.prediction.exam_type_id);
   const examName = examType ? examType.name : 'MCA CET';
 
+  // Admission University's WhatsApp group, if the admin has set
+  // one — scoped to whichever university this specific student
+  // chose. Left entirely null/absent if not set; the view falls
+  // back gracefully (shows Eligible Categories instead) rather
+  // than a broken/empty button.
+  const admissionUniversity = resultView.prediction.admission_university_id
+    ? await universityRepository.findById(resultView.prediction.admission_university_id)
+    : null;
+
   res.render('pages/result', {
     title: 'Your Prediction Result',
     prediction: resultView.prediction,
@@ -172,6 +182,7 @@ async function showResult(req, res) {
     CAP_ROUNDS: roundCodes,
     CHANCE_BUCKET_META,
     examName,
+    admissionUniversity,
   });
 }
 

@@ -1,0 +1,43 @@
+<div class="vn-admin-topbar">
+  <h1 class="h4 mb-0">WhatsApp Groups</h1>
+</div>
+
+<div class="vn-card">
+  <p class="small mb-3" style="color: var(--vn-ink-muted);">
+    Set a WhatsApp group invite link per university. Whichever university a student picks as
+    their <strong>Admission University</strong>, that university's link (if set) shows as a
+    "Join Admission Support Group" button on their result page. Leave blank for any university
+    without a group yet — no button shows for it until you add one.
+  </p>
+
+  <div class="table-responsive">
+    <table class="table align-middle mb-0">
+      <thead>
+        <tr>
+          <th>University</th>
+          <th>Short Name</th>
+          <th>WhatsApp Group</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% universities.forEach(function (uni) { %>
+          <tr>
+            <td><%= uni.name %></td>
+            <td><%= uni.short_name || '—' %></td>
+            <td>
+              <% if (uni.whatsapp_group_link) { %>
+                <span class="vn-badge vn-badge-success">Set</span>
+              <% } else { %>
+                <span class="vn-badge vn-badge-danger">Not set</span>
+              <% } %>
+            </td>
+            <td class="text-end">
+              <a href="<%= url('/admin/universities/' + uni.id + '/edit') %>" class="btn btn-sm btn-vn-outline">Edit</a>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -30,6 +30,7 @@
           <li><a href="<%= url('/admin/users') %>" class="<%= currentPath.startsWith('/admin/users') ? 'active' : '' %>"><%- icon('users', { class: 'vn-icon-xs me-2' }) %>Users</a></li>
           <li><a href="<%= url('/admin/notifications') %>" class="<%= currentPath.startsWith('/admin/notifications') ? 'active' : '' %>"><%- icon('megaphone', { class: 'vn-icon-xs me-2' }) %>Notifications</a></li>
           <li><a href="<%= url('/admin/sliders') %>" class="<%= currentPath.startsWith('/admin/sliders') ? 'active' : '' %>"><%- icon('image', { class: 'vn-icon-xs me-2' }) %>Slider</a></li>
+          <li><a href="<%= url('/admin/universities') %>" class="<%= currentPath.startsWith('/admin/universities') ? 'active' : '' %>"><%- whatsappIcon({ class: 'vn-icon-xs me-2' }) %>WhatsApp Groups</a></li>
         </ul>
         <form action="<%= url('/admin/logout') %>" method="POST" class="mt-3">
           <button type="submit" class="btn btn-sm btn-vn-outline w-100 d-inline-flex align-items-center justify-content-center gap-1" style="border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.85);">

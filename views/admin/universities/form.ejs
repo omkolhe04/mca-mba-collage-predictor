@@ -1,0 +1,43 @@
+<div class="vn-admin-topbar">
+  <h1 class="h4 mb-0">Edit WhatsApp Group</h1>
+  <a href="<%= url('/admin/universities') %>" class="btn btn-sm btn-vn-outline">&larr; Back to WhatsApp Groups</a>
+</div>
+
+<form action="<%= url('/admin/universities/' + university.id) %>" method="POST">
+  <div class="vn-card">
+    <div class="row g-3">
+      <div class="col-12">
+        <label class="form-label">University</label>
+        <input type="text" class="form-control" value="<%= university.name %>" disabled />
+      </div>
+
+      <div class="col-12 col-sm-6">
+        <label for="shortName" class="form-label">Short Name</label>
+        <input
+          type="text"
+          class="form-control"
+          id="shortName"
+          name="shortName"
+          value="<%= university.short_name || '' %>"
+          placeholder="e.g. SPPU"
+        />
+        <div class="form-text">Shown in the result page's button text, e.g. "Join SPPU Admission Support Group".</div>
+      </div>
+
+      <div class="col-12 col-sm-6">
+        <label for="whatsappGroupLink" class="form-label">WhatsApp Group Invite Link</label>
+        <input
+          type="text"
+          class="form-control"
+          id="whatsappGroupLink"
+          name="whatsappGroupLink"
+          value="<%= university.whatsapp_group_link || '' %>"
+          placeholder="https://chat.whatsapp.com/..."
+        />
+        <div class="form-text">Leave blank to hide the join button for this university.</div>
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-vn-primary mt-3">Save Changes</button>
+</form>

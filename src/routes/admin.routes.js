@@ -16,6 +16,7 @@ const adminImportController = require('../controllers/adminImport.controller');
 const adminUserController = require('../controllers/adminUser.controller');
 const adminNotificationController = require('../controllers/adminNotification.controller');
 const adminSliderController = require('../controllers/adminSlider.controller');
+const adminUniversityController = require('../controllers/adminUniversity.controller');
 const adminExamTypeController = require('../controllers/adminExamType.controller');
 
 const adminCollegeService = require('../services/adminCollege.service');
@@ -118,5 +119,9 @@ router.get('/sliders/new', asyncHandler(adminSliderController.showCreateForm));
 router.post('/sliders', uploadImage.single('image'), asyncHandler(adminSliderController.create));
 router.get('/sliders/:id/edit', asyncHandler(adminSliderController.showEditForm));
 router.post('/sliders/:id', uploadImage.single('image'), asyncHandler(adminSliderController.update));
+
+router.get('/universities', asyncHandler(adminUniversityController.list));
+router.get('/universities/:id/edit', asyncHandler(adminUniversityController.showEditForm));
+router.post('/universities/:id', asyncHandler(adminUniversityController.update));
 
 module.exports = router;

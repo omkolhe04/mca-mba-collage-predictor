@@ -48,13 +48,31 @@
             <p class="vn-stat-label mb-0">Colleges Evaluated</p>
           </div>
         </div>
-        <div class="col-6 col-lg-3">
-          <div class="vn-stat-card-premium">
-            <span class="vn-stat-icon-wrap"><%- icon('shield', { class: 'vn-icon-md' }) %></span>
-            <div class="vn-stat-number" style="font-size: 1.75rem;"><%= snapshot.eligibleCategories.length %></div>
-            <p class="vn-stat-label mb-0">Eligible Categories</p>
+        <% if (admissionUniversity && admissionUniversity.whatsapp_group_link) { %>
+          <div class="col-6 col-lg-3">
+            <a
+              href="<%= admissionUniversity.whatsapp_group_link %>"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="vn-stat-card-premium d-flex flex-column align-items-center justify-content-center h-100 text-decoration-none"
+            >
+              <span class="vn-stat-icon-wrap" style="background-color: transparent;">
+                <%- whatsappIcon({ class: 'vn-icon-lg' }) %>
+              </span>
+              <p class="mb-0 fw-semibold small text-center" style="color: var(--vn-ink);">
+                Join <%= admissionUniversity.short_name || admissionUniversity.name %> Admission Support Group
+              </p>
+            </a>
           </div>
-        </div>
+        <% } else { %>
+          <div class="col-6 col-lg-3">
+            <div class="vn-stat-card-premium">
+              <span class="vn-stat-icon-wrap"><%- icon('shield', { class: 'vn-icon-md' }) %></span>
+              <div class="vn-stat-number" style="font-size: 1.75rem;"><%= snapshot.eligibleCategories.length %></div>
+              <p class="vn-stat-label mb-0">Eligible Categories</p>
+            </div>
+          </div>
+        <% } %>
         <div class="col-6 col-lg-3">
           <div class="vn-stat-card-premium">
             <span class="vn-stat-icon-wrap"><%- icon('calendar', { class: 'vn-icon-md' }) %></span>
