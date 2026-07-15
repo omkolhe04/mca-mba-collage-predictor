@@ -1,0 +1,30 @@
+<div class="vn-card">
+  <% if (!recommendedPreferenceOrder.length) { %>
+    <p class="mb-0 text-center" style="color: var(--vn-ink-muted);">
+      Not enough data yet to recommend a preference order.
+    </p>
+  <% } else { %>
+    <% recommendedPreferenceOrder.forEach(function (item) { %>
+      <div class="vn-preference-row">
+        <span class="vn-preference-rank"><%= item.rank %></span>
+        <div class="flex-grow-1">
+          <p class="mb-0 fw-semibold"><%= item.collegeName %></p>
+          <% if (item.basis === 'dream_college') { %>
+            <span class="vn-badge vn-badge-success">Dream College</span>
+          <% } else { %>
+            <span class="small" style="color: var(--vn-ink-muted);">Best available chance</span>
+          <% } %>
+        </div>
+        <div class="text-end flex-shrink-0">
+          <p class="small mb-1" style="color: var(--vn-ink-muted);">Round 1 Chance</p>
+          <% if (item.round1Chance) { %>
+            <% const meta = CHANCE_BUCKET_META[item.round1Chance]; %>
+            <span class="vn-badge <%= meta.badgeClass %>"><%= meta.label %></span>
+          <% } else { %>
+            <span class="small" style="color: var(--vn-ink-muted);">&mdash;</span>
+          <% } %>
+        </div>
+      </div>
+    <% }) %>
+  <% } %>
+</div>

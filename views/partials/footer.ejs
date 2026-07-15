@@ -1,0 +1,33 @@
+<footer class="vn-footer mt-5">
+  <div class="container py-5">
+    <div class="row gy-4">
+      <div class="col-12 col-md-4">
+        <div class="mb-3">
+          <%- include('./brand-lockup', { variant: 'footer' }) %>
+        </div>
+        <p class="mb-0" style="color: var(--vn-ink-muted);">
+          For Maharashtra CAP Admissions, built on official cutoff data.
+        </p>
+      </div>
+      <div class="col-6 col-md-4">
+        <h6 class="vn-footer-heading mb-3">Quick Links</h6>
+        <ul class="list-unstyled">
+          <li class="mb-2"><a href="<%= url('/predict') %>">Start Prediction</a></li>
+          <li class="mb-2"><a href="<%= url('/#colleges') %>">Browse Colleges</a></li>
+          <li class="mb-2"><a href="<%= url('/#about') %>">About</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-md-4">
+        <h6 class="vn-footer-heading mb-3">Disclaimer</h6>
+        <p class="small mb-0" style="color: var(--vn-ink-muted);">
+          Predictions are estimates based on previous years' CAP cutoff trends and are not
+          guarantees of admission. Always refer to the official DTE Maharashtra CAP process.
+        </p>
+      </div>
+    </div>
+    <hr class="my-4" style="border-color: var(--vn-border);" />
+    <p class="small mb-0 text-center" style="color: var(--vn-ink-muted);">
+      &copy; <%= new Date().getFullYear() %> VidyaNITI Education. All rights reserved.
+    </p>
+  </div>
+</footer>

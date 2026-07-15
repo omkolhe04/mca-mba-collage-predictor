@@ -1,0 +1,44 @@
+<% if (sliders && sliders.length > 0) { %>
+  <div id="vnHomeCarousel" class="carousel slide" data-bs-ride="<%= sliders.length > 1 ? 'carousel' : 'false' %>">
+    <% if (sliders.length > 1) { %>
+      <div class="carousel-indicators">
+        <% sliders.forEach(function (slider, idx) { %>
+          <button
+            type="button"
+            data-bs-target="#vnHomeCarousel"
+            data-bs-slide-to="<%= idx %>"
+            class="<%= idx === 0 ? 'active' : '' %>"
+            aria-current="<%= idx === 0 ? 'true' : 'false' %>"
+            aria-label="Slide <%= idx + 1 %>"
+          ></button>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <div class="carousel-inner">
+      <% sliders.forEach(function (slider, idx) { %>
+        <div class="carousel-item <%= idx === 0 ? 'active' : '' %>">
+          <% if (slider.link_url) { %><a href="<%= slider.link_url %>"><% } %>
+          <img
+            src="<%= slider.publicUrl %>"
+            class="d-block w-100"
+            alt="<%= slider.title || 'MCA | MBA College Predictor' %>"
+            style="aspect-ratio: 21/7; object-fit: cover;"
+          />
+          <% if (slider.link_url) { %></a><% } %>
+        </div>
+      <% }) %>
+    </div>
+
+    <% if (sliders.length > 1) { %>
+      <button class="carousel-control-prev" type="button" data-bs-target="#vnHomeCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#vnHomeCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    <% } %>
+  </div>
+<% } %>

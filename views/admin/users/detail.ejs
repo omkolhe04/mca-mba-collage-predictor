@@ -1,0 +1,69 @@
+<div class="vn-admin-topbar">
+  <h1 class="h4 mb-0"><%= user.name %></h1>
+  <a href="<%= url('/admin/users') %>" class="btn btn-sm btn-vn-outline">&larr; Back to Users</a>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-12 col-md-6">
+    <div class="vn-card">
+      <h2 class="h6 mb-3">Contact Details</h2>
+      <dl class="row small mb-0">
+        <dt class="col-4" style="color: var(--vn-ink-muted);">Mobile</dt>
+        <dd class="col-8"><%= user.mobile %></dd>
+        <dt class="col-4" style="color: var(--vn-ink-muted);">Email</dt>
+        <dd class="col-8"><%= user.email || '—' %></dd>
+        <dt class="col-4" style="color: var(--vn-ink-muted);">Gender</dt>
+        <dd class="col-8"><%= user.gender || '—' %></dd>
+        <dt class="col-4" style="color: var(--vn-ink-muted);">Joined</dt>
+        <dd class="col-8"><%= new Date(user.created_at).toLocaleString('en-IN') %></dd>
+      </dl>
+    </div>
+  </div>
+  <div class="col-12 col-md-6">
+    <div class="vn-card">
+      <h2 class="h6 mb-3">Status</h2>
+      <p class="small mb-3">
+        <% if (user.is_active) { %>
+          <span class="vn-badge vn-badge-success">Active</span>
+        <% } else { %>
+          <span class="vn-badge vn-badge-danger">Inactive</span>
+        <% } %>
+      </p>
+      <form action="<%= url('/admin/users/' + user.id + '/toggle-active') %>" method="POST">
+        <button type="submit" class="btn btn-sm btn-vn-outline">
+          <%= user.is_active ? 'Deactivate User' : 'Reactivate User' %>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="vn-card">
+  <h2 class="h6 mb-3">Prediction History</h2>
+  <% if (!predictions.length) { %>
+    <p class="small mb-0" style="color: var(--vn-ink-muted);">No predictions submitted yet.</p>
+  <% } else { %>
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Percentile</th>
+            <th>Submitted</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% predictions.forEach(function (p) { %>
+            <tr>
+              <td><%= p.percentile %></td>
+              <td><%= new Date(p.created_at).toLocaleString('en-IN') %></td>
+              <td class="text-end">
+                <a href="<%= url('/predict/' + p.id + '/result') %>" class="btn btn-sm btn-vn-outline" target="_blank">View Result</a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</div>

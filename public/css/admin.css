@@ -1,0 +1,157 @@
+/* ==========================================================
+   Admin Panel — sidebar layout. Reuses the same design tokens
+   from style.css (colors, radius, spacing) so the admin panel
+   feels like part of the same product, not a bolted-on tool.
+
+   "Lighter touch" redesign: same premium color/type tokens and
+   card/table polish as the public site, but deliberately
+   without the heavier motion system (scroll-reveal, magnetic
+   buttons, glass blur) — this is a daily-use internal tool, not
+   a marketing surface, so premium.css is intentionally NOT
+   loaded here (see views/layouts/admin.ejs).
+   ========================================================== */
+
+.vn-admin-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.vn-admin-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background-color: var(--vn-ink);
+  color: var(--vn-white);
+  padding: var(--vn-space-4) var(--vn-space-3);
+  display: flex;
+  flex-direction: column;
+}
+
+.vn-admin-brand {
+  font-family: var(--vn-font-display);
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--vn-white);
+  margin-bottom: var(--vn-space-5);
+  padding-left: var(--vn-space-2);
+}
+
+.vn-admin-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+}
+
+.vn-admin-nav li {
+  margin-bottom: var(--vn-space-1);
+}
+
+.vn-admin-nav a {
+  display: flex;
+  align-items: center;
+  padding: 0.6rem var(--vn-space-2);
+  border-radius: var(--vn-radius-sm);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.vn-admin-nav a svg {
+  flex-shrink: 0;
+}
+
+.vn-admin-nav a:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--vn-white);
+}
+
+.vn-admin-nav a.active {
+  background-color: var(--vn-primary);
+  color: var(--vn-white);
+}
+
+.vn-admin-content {
+  flex: 1;
+  background-color: var(--vn-bg-subtle);
+  padding: var(--vn-space-4);
+  overflow-x: hidden;
+}
+
+.vn-admin-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--vn-space-4);
+}
+
+.vn-stat-card {
+  background-color: var(--vn-white);
+  border: 1px solid var(--vn-border);
+  border-radius: var(--vn-radius-md);
+  padding: var(--vn-space-4);
+}
+
+.vn-stat-value {
+  font-family: var(--vn-font-display);
+  font-weight: 800;
+  font-size: 2rem;
+  color: var(--vn-ink);
+}
+
+/* ---------------------------------------------------------
+   Tables — no custom styling existed anywhere before this;
+   every admin list page was rendering bare Bootstrap defaults.
+   This is the single highest-impact, lowest-risk improvement
+   for the admin redesign, since ~6 screens are table-driven.
+   --------------------------------------------------------- */
+.vn-card .table {
+  margin-bottom: 0;
+}
+
+.vn-card .table thead th {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--vn-ink-muted);
+  border-bottom: 2px solid var(--vn-border);
+  padding: 0.75rem 1rem;
+  white-space: nowrap;
+}
+
+.vn-card .table tbody td {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--vn-border);
+  vertical-align: middle;
+}
+
+.vn-card .table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.vn-card .table tbody tr:hover {
+  background-color: var(--vn-bg-subtle);
+}
+
+@media (max-width: 768px) {
+  .vn-admin-shell {
+    flex-direction: column;
+  }
+  .vn-admin-sidebar {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+  }
+  .vn-admin-nav {
+    display: flex;
+    gap: var(--vn-space-1);
+  }
+  .vn-admin-brand {
+    margin-bottom: 0;
+    margin-right: var(--vn-space-3);
+    white-space: nowrap;
+  }
+}

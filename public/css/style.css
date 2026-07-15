@@ -1,0 +1,521 @@
+/* ==========================================================
+   VidyaNITI — Design Tokens (Premium Redesign)
+   Modern, premium SaaS aesthetic — Apple × Linear × Vercel ×
+   Stripe. White background, generous whitespace, soft shadows,
+   subtle motion. Light mode only.
+
+   BACKWARD-COMPAT NOTE: the original token names (--vn-blue-900,
+   --vn-blue-700, etc.) are kept as aliases pointing at the new
+   palette below, rather than removed. Every existing component
+   across the whole app (buttons, badges, cards, the admin panel)
+   references these variables rather than raw hex values, so
+   redefining them here cascades the new premium look everywhere
+   immediately — the actual markup/structure of each page is
+   still redesigned individually, phase by phase, but none of it
+   is stuck on the old palette in the meantime.
+   ========================================================== */
+
+:root {
+  /* ---- New premium palette ---- */
+  --vn-primary: #2563eb;
+  --vn-primary-dark: #1d4ed8;
+  --vn-primary-light: #eff6ff;
+  --vn-secondary: #4f46e5;
+  --vn-accent: #0ea5e9;
+
+  --vn-success: #10b981;
+  --vn-success-bg: #ecfdf5;
+  --vn-warning: #f59e0b;
+  --vn-warning-bg: #fffbeb;
+  --vn-danger: #ef4444;
+  --vn-danger-bg: #fef2f2;
+
+  --vn-ink: #0f172a;
+  --vn-ink-muted: #64748b;
+  --vn-border: #e2e8f0;
+  --vn-white: #ffffff;
+  --vn-bg-subtle: #f8fafc;
+
+  /* ---- Backward-compat aliases (old names -> new tokens) ---- */
+  --vn-blue-900: var(--vn-ink);
+  --vn-blue-700: var(--vn-primary);
+  --vn-blue-600: var(--vn-primary);
+  --vn-blue-100: var(--vn-primary-light);
+  --vn-blue-50: var(--vn-bg-subtle);
+
+  /* ---- Typography ---- */
+  --vn-font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --vn-font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+
+  /* ---- Radius (larger, rounder — premium SaaS feel) ---- */
+  --vn-radius-sm: 10px;
+  --vn-radius-md: 16px;
+  --vn-radius-lg: 24px;
+  --vn-radius-xl: 32px;
+  --vn-radius-full: 999px;
+
+  /* ---- Shadows (soft, layered) ---- */
+  --vn-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --vn-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06), 0 2px 4px rgba(15, 23, 42, 0.04);
+  --vn-shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.08), 0 4px 8px rgba(15, 23, 42, 0.04);
+  --vn-shadow-glow-primary: 0 8px 24px rgba(37, 99, 235, 0.22);
+  --vn-shadow-card: var(--vn-shadow-md); /* alias: original card shadow name */
+
+  /* ---- Spacing scale ---- */
+  --vn-space-1: 4px;
+  --vn-space-2: 8px;
+  --vn-space-3: 16px;
+  --vn-space-4: 24px;
+  --vn-space-5: 40px;
+  --vn-space-6: 64px;
+  --vn-space-7: 96px;
+
+  /* ---- Motion ---- */
+  --vn-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --vn-duration-fast: 150ms;
+  --vn-duration-base: 250ms;
+  --vn-duration-slow: 500ms;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  /* Defensive safety net — the spec requires no horizontal
+     scrolling anywhere. This catches any element that bleeds
+     past the viewport width (the actual bug fixed above was
+     .vn-mesh-bg's decorative background bleed lacking overflow
+     containment), without needing to audit every future
+     addition for the same mistake. */
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--vn-font-body);
+  color: var(--vn-ink);
+  background-color: var(--vn-white);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.vn-display {
+  font-family: var(--vn-font-display);
+  color: var(--vn-ink);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+a {
+  color: var(--vn-primary);
+  text-decoration: none;
+  transition: color var(--vn-duration-fast) var(--vn-ease);
+}
+
+a:hover {
+  color: var(--vn-primary-dark);
+}
+
+/* Respect reduced-motion preference — every custom animation in
+   premium.css/premium-ui.js checks this same query, so motion is
+   never forced on users who've asked their OS to minimize it. */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ---------------------------------------------------------
+   Buttons — premium, rounded, soft shadow, subtle lift on hover
+   --------------------------------------------------------- */
+.btn-vn-primary {
+  background-color: var(--vn-primary);
+  border: 1px solid var(--vn-primary);
+  color: var(--vn-white);
+  border-radius: var(--vn-radius-sm);
+  font-weight: 600;
+  padding: 0.7rem 1.5rem;
+  box-shadow: var(--vn-shadow-sm);
+  transition: background-color var(--vn-duration-fast) var(--vn-ease),
+    border-color var(--vn-duration-fast) var(--vn-ease),
+    transform var(--vn-duration-fast) var(--vn-ease),
+    box-shadow var(--vn-duration-fast) var(--vn-ease);
+}
+
+.btn-vn-primary:hover,
+.btn-vn-primary:focus {
+  background-color: var(--vn-primary-dark);
+  border-color: var(--vn-primary-dark);
+  color: var(--vn-white);
+  transform: translateY(-1px);
+  box-shadow: var(--vn-shadow-glow-primary);
+}
+
+.btn-vn-outline {
+  background-color: transparent;
+  border: 1px solid var(--vn-primary);
+  color: var(--vn-primary);
+  border-radius: var(--vn-radius-sm);
+  font-weight: 600;
+  padding: 0.7rem 1.5rem;
+  transition: background-color var(--vn-duration-fast) var(--vn-ease),
+    color var(--vn-duration-fast) var(--vn-ease),
+    transform var(--vn-duration-fast) var(--vn-ease);
+}
+
+.btn-vn-outline:hover {
+  background-color: var(--vn-primary-light);
+  color: var(--vn-primary-dark);
+  transform: translateY(-1px);
+}
+
+/* Visible keyboard focus everywhere — required quality floor */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--vn-primary);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------
+   Cards — rounded, soft shadow, generous internal spacing
+   --------------------------------------------------------- */
+.vn-card {
+  background-color: var(--vn-white);
+  border: 1px solid var(--vn-border);
+  border-radius: var(--vn-radius-md);
+  box-shadow: var(--vn-shadow-card);
+  padding: var(--vn-space-4);
+}
+
+/* ---------------------------------------------------------
+   Chance badges — reused across result cards (Phase 4/5)
+   --------------------------------------------------------- */
+.vn-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.vn-badge-success {
+  background-color: var(--vn-success-bg);
+  color: var(--vn-success);
+}
+
+.vn-badge-warning {
+  background-color: var(--vn-warning-bg);
+  color: var(--vn-warning);
+}
+
+.vn-badge-danger {
+  background-color: var(--vn-danger-bg);
+  color: var(--vn-danger);
+}
+
+/* ---------------------------------------------------------
+   Layout helpers
+   --------------------------------------------------------- */
+.vn-section {
+  padding-top: var(--vn-space-6);
+  padding-bottom: var(--vn-space-6);
+}
+
+.vn-container-narrow {
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ---------------------------------------------------------
+   Landing page — hero, steps, features, CTA
+   --------------------------------------------------------- */
+.vn-eyebrow {
+  font-family: var(--vn-font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--vn-blue-700);
+}
+
+.vn-hero-title {
+  font-family: var(--vn-font-display);
+  font-weight: 800;
+  color: var(--vn-blue-900);
+  font-size: 2.25rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 992px) {
+  .vn-hero-title {
+    font-size: 2.75rem;
+  }
+}
+
+.vn-step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--vn-radius-sm);
+  background-color: var(--vn-blue-100);
+  color: var(--vn-blue-700);
+  font-family: var(--vn-font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.vn-feature-icon {
+  display: block;
+  font-size: 1.75rem;
+  color: var(--vn-blue-700);
+  margin-bottom: var(--vn-space-2);
+}
+
+.vn-cta-banner {
+  background-color: var(--vn-blue-700);
+  border-radius: var(--vn-radius-lg);
+  padding: var(--vn-space-6) var(--vn-space-4);
+}
+
+/* ---------------------------------------------------------
+   Brand lockup — logo + title + optional subtitle. One
+   component reused everywhere branding appears. Sizing follows
+   the spec exactly: Desktop 48-56px, Tablet 40-48px, Mobile
+   32-40px logo height.
+   --------------------------------------------------------- */
+.vn-brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.vn-brand-logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.vn-brand-logo-img {
+  height: 52px;
+  width: auto;
+  max-width: none;
+  display: block;
+  /* Never stretch or distort — height-driven sizing only, width
+     follows the image's own real aspect ratio automatically. */
+}
+
+/* The logo's background is opaque white (confirmed, not
+   transparent) — on the dark admin sidebar specifically, wrap it
+   in a small white rounded card so that white background reads
+   as an intentional badge rather than a stray box. Every other
+   context already has a white page background, so no wrapper is
+   needed there. */
+.vn-brand-logo-card {
+  background-color: var(--vn-white);
+  border-radius: var(--vn-radius-sm);
+  padding: 0.4rem 0.6rem;
+}
+
+.vn-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  min-width: 0;
+}
+
+.vn-brand-title {
+  font-family: var(--vn-font-display);
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--vn-ink);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.vn-brand-subtitle {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--vn-ink-muted);
+  margin-top: 1px;
+}
+
+@media (max-width: 991px) {
+  .vn-brand-logo-img {
+    height: 44px;
+  }
+}
+
+@media (max-width: 575px) {
+  .vn-brand-logo-img {
+    height: 36px;
+  }
+  .vn-brand-title {
+    font-size: 0.85rem;
+    white-space: normal;
+  }
+}
+
+/* Navbar — compact, title can shrink further on very small
+   screens rather than overflow/wrap awkwardly. On very narrow
+   screens, hide the title text and show just the logo — the
+   logo already carries the VidyaNITI brand visually, and a wide
+   wordmark logo plus a long title text genuinely doesn't fit in
+   a mobile navbar together. */
+.vn-brand-lockup-navbar .vn-brand-title {
+  font-size: 1rem;
+}
+.vn-brand-lockup-navbar .vn-brand-subtitle {
+  font-size: 0.68rem;
+}
+@media (max-width: 380px) {
+  .vn-brand-lockup-navbar .vn-brand-title {
+    font-size: 0.85rem;
+  }
+  .vn-brand-lockup-navbar .vn-brand-subtitle {
+    display: none;
+  }
+}
+
+/* Hero — the most prominent instance. */
+.vn-brand-lockup-hero .vn-brand-logo-img {
+  height: 56px;
+}
+.vn-brand-lockup-hero .vn-brand-title {
+  font-size: 1.25rem;
+  white-space: normal;
+}
+.vn-brand-lockup-hero .vn-brand-subtitle {
+  font-size: 0.8rem;
+}
+
+/* Admin sidebar — dark background, needs light text. */
+.vn-brand-lockup-admin .vn-brand-title {
+  color: var(--vn-white);
+}
+
+/* ---------------------------------------------------------
+   Empty state — one consistent pattern for "nothing here yet"
+   across the whole app (admin list pages, dream-college hints,
+   result page's not-ready state, etc.). Lives in style.css
+   (not premium.css) since admin needs it too and doesn't load
+   the motion system.
+   --------------------------------------------------------- */
+.vn-empty-state {
+  text-align: center;
+  padding: var(--vn-space-5) var(--vn-space-3);
+}
+
+.vn-empty-state-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: var(--vn-bg-subtle);
+  color: var(--vn-ink-muted);
+  margin-bottom: var(--vn-space-3);
+}
+
+.vn-empty-state-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--vn-ink);
+  margin-bottom: 0.4rem;
+}
+
+.vn-empty-state-desc {
+  color: var(--vn-ink-muted);
+  max-width: 46ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ---------------------------------------------------------
+   Success toast — a dismissible confirmation banner, e.g.
+   after an admin create/update action. Positioned inline at
+   the top of content (not a fixed/floating overlay), so it
+   works identically with or without JS.
+   --------------------------------------------------------- */
+.vn-toast-success {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: var(--vn-success-bg);
+  color: var(--vn-success);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: var(--vn-radius-md);
+  padding: 0.9rem 1.1rem;
+  margin-bottom: var(--vn-space-3);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.vn-toast-success svg {
+  flex-shrink: 0;
+}
+
+.vn-toast-dismiss {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: inherit;
+  opacity: 0.6;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+}
+
+.vn-toast-dismiss:hover {
+  opacity: 1;
+}
+
+/* ---------------------------------------------------------
+   Icon sizing — for every icon rendered via the icon() helper
+   (src/utils/icons.js). Lives here (not premium.css) because
+   these are plain static sizes, not motion, and the admin panel
+   needs them too — it deliberately doesn't load premium.css but
+   does load this file. Without an explicit size, an inline SVG
+   with no width/height renders unconstrained (very large),
+   which is exactly the bug this fixes.
+   --------------------------------------------------------- */
+.vn-icon-xs {
+  width: 14px;
+  height: 14px;
+}
+.vn-icon-sm {
+  width: 18px;
+  height: 18px;
+}
+.vn-icon-md {
+  width: 22px;
+  height: 22px;
+}
+.vn-icon-lg {
+  width: 28px;
+  height: 28px;
+}
+.vn-icon-xl {
+  width: 40px;
+  height: 40px;
+}
+

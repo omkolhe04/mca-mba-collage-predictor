@@ -1,0 +1,40 @@
+<% const roundInfo = dreamCollege.rounds[roundCode]; %>
+<div class="vn-card mb-4" style="border: 2px solid var(--vn-primary); background-color: var(--vn-primary-light);">
+  <div class="d-flex justify-content-between align-items-start gap-3">
+    <div class="d-flex align-items-start gap-3">
+      <span class="vn-college-avatar" style="background-color: var(--vn-white);"><%- icon('award', { class: 'vn-icon-sm' }) %></span>
+      <div>
+        <p class="vn-eyebrow mb-1">Your Dream College</p>
+        <h3 class="h5 mb-1"><%= dreamCollege.collegeName %></h3>
+        <% if (dreamCollege.city) { %>
+          <p class="small mb-0" style="color: var(--vn-ink-muted);"><%= dreamCollege.city %></p>
+        <% } %>
+      </div>
+    </div>
+    <% if (roundInfo) { %>
+      <% const meta = CHANCE_BUCKET_META[roundInfo.chance]; %>
+      <span class="vn-badge <%= meta.badgeClass %> flex-shrink-0"><%= meta.label %></span>
+    <% } else { %>
+      <span class="small flex-shrink-0" style="color: var(--vn-ink-muted);">No data this round</span>
+    <% } %>
+  </div>
+
+  <% if (roundInfo) { %>
+    <div class="row small mt-3">
+      <div class="col-6 col-sm-4 mb-2 mb-sm-0">
+        <span style="color: var(--vn-ink-muted);">Previous Cutoff</span><br />
+        <%= roundInfo.cutoffPercentile %>
+      </div>
+      <div class="col-6 col-sm-4 mb-2 mb-sm-0">
+        <span style="color: var(--vn-ink-muted);">Difference</span><br />
+        <%= roundInfo.difference > 0 ? '+' : '' %><%= roundInfo.difference %>
+      </div>
+      <div class="col-12 col-sm-4">
+        <span style="color: var(--vn-ink-muted);">Matched Category</span><br />
+        <%= roundInfo.matchedCategoryCode %>
+      </div>
+    </div>
+  <% } %>
+
+  <a href="<%= url('/colleges/' + dreamCollege.collegeId) %>" class="btn btn-vn-outline btn-sm mt-3" style="background-color: var(--vn-white);">View Details</a>
+</div>

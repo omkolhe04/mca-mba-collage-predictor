@@ -1,0 +1,16 @@
+<section class="vn-section">
+  <div class="container vn-container-narrow">
+    <div class="vn-empty-state">
+      <span class="vn-empty-state-icon">
+        <%- icon(statusCode === 404 ? 'search' : 'alert-circle', { class: 'vn-icon-lg' }) %>
+      </span>
+      <p class="vn-eyebrow mb-2">Error <%= statusCode %></p>
+      <h1 class="h3 vn-empty-state-title"><%= statusCode === 404 ? "We couldn't find that page" : 'Something went wrong' %></h1>
+      <p class="vn-empty-state-desc mb-4"><%= message %></p>
+      <a href="<%= url('/') %>" class="btn btn-vn-primary d-inline-flex align-items-center gap-2">
+        <%- icon('house', { class: 'vn-icon-sm' }) %>
+        Back to Home
+      </a>
+    </div>
+  </div>
+</section>

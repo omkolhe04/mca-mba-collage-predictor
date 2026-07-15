@@ -1,0 +1,32 @@
+<div class="vn-admin-topbar">
+  <h1 class="h4 mb-0">Manage Slider</h1>
+  <a href="<%= url('/admin/sliders/new') %>" class="btn btn-vn-primary btn-sm"><%- icon('plus', { class: 'vn-icon-xs me-1' }) %>Add Slide</a>
+</div>
+
+<% if (!sliders.length) { %>
+  <div class="vn-card">
+    <p class="small mb-0 text-center" style="color: var(--vn-ink-muted);">No slides yet.</p>
+  </div>
+<% } else { %>
+  <div class="row g-3">
+    <% sliders.forEach(function (slider) { %>
+      <div class="col-12 col-sm-6 col-lg-4">
+        <div class="vn-card h-100">
+          <% if (slider.publicUrl) { %>
+            <img src="<%= slider.publicUrl %>" alt="<%= slider.title || 'Slide' %>" class="w-100 mb-2" style="border-radius: var(--vn-radius-sm); aspect-ratio: 16/7; object-fit: cover;" />
+          <% } %>
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <p class="mb-0 fw-semibold"><%= slider.title || '(Untitled)' %></p>
+            <% if (slider.is_active) { %>
+              <span class="vn-badge vn-badge-success">Active</span>
+            <% } else { %>
+              <span class="vn-badge vn-badge-danger">Inactive</span>
+            <% } %>
+          </div>
+          <p class="small mb-2" style="color: var(--vn-ink-muted);">Order: <%= slider.display_order %></p>
+          <a href="<%= url('/admin/sliders/' + slider.id + '/edit') %>" class="btn btn-sm btn-vn-outline w-100">Edit</a>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+<% } %>

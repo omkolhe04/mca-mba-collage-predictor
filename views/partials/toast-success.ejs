@@ -1,0 +1,9 @@
+<% if (typeof successMessage !== 'undefined' && successMessage) { %>
+  <div class="vn-toast-success">
+    <%- icon('check-circle', { class: 'vn-icon-sm' }) %>
+    <span><%= successMessage %></span>
+    <button type="button" class="vn-toast-dismiss" onclick="this.closest('.vn-toast-success').remove()" aria-label="Dismiss">
+      <%- icon('x', { class: 'vn-icon-xs' }) %>
+    </button>
+  </div>
+<% } %>

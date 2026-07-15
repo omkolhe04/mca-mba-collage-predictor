@@ -1,0 +1,25 @@
+<% if (notifications && notifications.length > 0) { %>
+  <div class="container pt-3">
+    <% notifications.forEach(function (n) { %>
+      <%
+        const typeStyles = {
+          info: { bg: 'var(--vn-blue-100)', fg: 'var(--vn-blue-900)' },
+          success: { bg: 'var(--vn-success-bg)', fg: 'var(--vn-success)' },
+          warning: { bg: 'var(--vn-warning-bg)', fg: 'var(--vn-warning)' },
+          urgent: { bg: 'var(--vn-danger-bg)', fg: 'var(--vn-danger)' },
+        };
+        const style = typeStyles[n.type] || typeStyles.info;
+      %>
+      <div
+        class="d-flex justify-content-between align-items-start gap-3 mb-2"
+        style="background-color: <%= style.bg %>; color: <%= style.fg %>; border-radius: var(--vn-radius-sm); padding: 0.75rem 1rem;"
+        role="status"
+      >
+        <div>
+          <strong><%= n.title %></strong>
+          <span class="ms-2"><%= n.message %></span>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+<% } %>

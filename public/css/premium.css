@@ -1,0 +1,971 @@
+/* ==========================================================
+   VidyaNITI — Premium Motion & Effects
+   ==========================================================
+   Every effect here is pure CSS (transforms + transitions +
+   keyframes), driven by small vanilla-JS toggles in
+   premium-ui.js (Intersection Observer for scroll-reveal,
+   mousemove for magnetic buttons, a click listener for ripple).
+   No animation libraries — per the brief's own performance
+   requirement, and consistent with this project's "no
+   unnecessary dependencies" approach throughout.
+
+   Loaded on the PUBLIC site only (layouts/main.ejs). The admin
+   panel intentionally does NOT load this file — it gets the new
+   color/type tokens from style.css, but skips the heavier motion
+   system, since it's a daily-use internal tool, not a marketing
+   surface.
+   ========================================================== */
+
+/* ---------------------------------------------------------
+   Scroll reveal — element starts faded/offset, animates in
+   once it enters the viewport. Toggled by premium-ui.js adding
+   .vn-revealed when an Intersection Observer fires.
+   --------------------------------------------------------- */
+.vn-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity var(--vn-duration-slow) var(--vn-ease), transform var(--vn-duration-slow) var(--vn-ease);
+  will-change: opacity, transform;
+}
+
+.vn-reveal.vn-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.vn-reveal-scale {
+  opacity: 0;
+  transform: scale(0.94);
+  transition: opacity var(--vn-duration-slow) var(--vn-ease), transform var(--vn-duration-slow) var(--vn-ease);
+}
+
+.vn-reveal-scale.vn-revealed {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Staggered reveal delays — for grids of cards animating in
+   one after another rather than all at once. */
+.vn-reveal-delay-1 {
+  transition-delay: 80ms;
+}
+.vn-reveal-delay-2 {
+  transition-delay: 160ms;
+}
+.vn-reveal-delay-3 {
+  transition-delay: 240ms;
+}
+.vn-reveal-delay-4 {
+  transition-delay: 320ms;
+}
+
+/* ---------------------------------------------------------
+   Hover lift — the default premium card/button interaction.
+   --------------------------------------------------------- */
+.vn-hover-lift {
+  transition: transform var(--vn-duration-base) var(--vn-ease), box-shadow var(--vn-duration-base) var(--vn-ease);
+}
+
+.vn-hover-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--vn-shadow-lg);
+}
+
+/* ---------------------------------------------------------
+   Soft glow — used on selected/active cards (e.g. the chosen
+   exam card) instead of a harsh solid border.
+   --------------------------------------------------------- */
+.vn-glow-primary {
+  box-shadow: var(--vn-shadow-glow-primary);
+}
+
+/* ---------------------------------------------------------
+   Glass effect — subtle translucency + blur, used sparingly
+   (navbar, a few hero elements) — never for body text
+   containers, where it would hurt readability.
+   --------------------------------------------------------- */
+.vn-glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+/* ---------------------------------------------------------
+   Mesh gradient background — soft, blurred, very low-opacity
+   color blobs behind hero content. Never distracting: opacity
+   is deliberately low and blur is heavy, per the brief.
+   --------------------------------------------------------- */
+.vn-mesh-bg {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.vn-mesh-bg::before {
+  content: '';
+  position: absolute;
+  inset: -15% -10%;
+  z-index: -1;
+  background: radial-gradient(circle at 15% 20%, rgba(37, 99, 235, 0.14), transparent 42%),
+    radial-gradient(circle at 85% 15%, rgba(79, 70, 229, 0.12), transparent 40%),
+    radial-gradient(circle at 50% 90%, rgba(14, 165, 233, 0.1), transparent 45%);
+  filter: blur(50px);
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------
+   Float — slow, continuous vertical drift. Used sparingly on
+   a few hero/decorative elements, never on anything with text
+   a user needs to read carefully.
+   --------------------------------------------------------- */
+@keyframes vn-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+.vn-float {
+  animation: vn-float 5s var(--vn-ease) infinite;
+}
+
+.vn-float-delay-1 {
+  animation-delay: 0.6s;
+}
+.vn-float-delay-2 {
+  animation-delay: 1.2s;
+}
+
+/* ---------------------------------------------------------
+   Entrance animations — one-shot, for content that should
+   animate in on page load rather than on scroll (e.g. hero).
+   --------------------------------------------------------- */
+@keyframes vn-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes vn-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes vn-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.vn-animate-fade-in {
+  animation: vn-fade-in var(--vn-duration-slow) var(--vn-ease) both;
+}
+
+.vn-animate-slide-up {
+  animation: vn-slide-up var(--vn-duration-slow) var(--vn-ease) both;
+}
+
+.vn-animate-scale-in {
+  animation: vn-scale-in var(--vn-duration-slow) var(--vn-ease) both;
+}
+
+/* ---------------------------------------------------------
+   Ripple — the actual expanding circle is a JS-inserted <span>;
+   this just defines its shape/animation.
+   --------------------------------------------------------- */
+.vn-ripple-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.vn-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  transform: scale(0);
+  pointer-events: none;
+  animation: vn-ripple-anim 600ms ease-out;
+}
+
+@keyframes vn-ripple-anim {
+  to {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+
+/* ---------------------------------------------------------
+   Magnetic button — premium-ui.js applies a small transform
+   (translate) via inline style as the cursor moves near the
+   button; this just establishes the smooth-return transition
+   and GPU-friendly rendering hint.
+   --------------------------------------------------------- */
+.vn-magnetic {
+  transition: transform var(--vn-duration-fast) var(--vn-ease);
+  will-change: transform;
+}
+
+/* ---------------------------------------------------------
+   Count-up number display — typography only; premium-ui.js
+   animates the actual digits.
+   --------------------------------------------------------- */
+.vn-stat-number {
+  font-family: var(--vn-font-display);
+  font-weight: 800;
+  font-size: 2.5rem;
+  color: var(--vn-ink);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+/* ---------------------------------------------------------
+   "Coming Soon" pill — for future exam types (Engineering,
+   Pharmacy, etc.) shown as disabled/preview cards.
+   --------------------------------------------------------- */
+.vn-badge-coming-soon {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--vn-bg-subtle);
+  color: var(--vn-ink-muted);
+  border: 1px solid var(--vn-border);
+  border-radius: var(--vn-radius-full);
+  padding: 0.2rem 0.7rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ---------------------------------------------------------
+   Stat cards — animated counters. The number itself is
+   .vn-stat-number (defined above); this wraps it with an icon
+   and label into a full card.
+   --------------------------------------------------------- */
+.vn-stat-card-premium {
+  background-color: var(--vn-white);
+  border: 1px solid var(--vn-border);
+  border-radius: var(--vn-radius-lg);
+  padding: var(--vn-space-4);
+  text-align: center;
+  transition: transform var(--vn-duration-base) var(--vn-ease), box-shadow var(--vn-duration-base) var(--vn-ease);
+}
+
+.vn-stat-card-premium:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--vn-shadow-md);
+}
+
+.vn-stat-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--vn-radius-md);
+  background-color: var(--vn-primary-light);
+  color: var(--vn-primary);
+  margin-bottom: var(--vn-space-3);
+}
+
+.vn-stat-label {
+  color: var(--vn-ink-muted);
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin-top: 4px;
+}
+/* ---------------------------------------------------------
+   Premium timeline — vertical connected steps for How It Works.
+   Single-column by design (marker + content side by side) so it
+   naturally works at every viewport without a separate mobile
+   layout.
+   --------------------------------------------------------- */
+.vn-timeline {
+  position: relative;
+}
+
+.vn-timeline::before {
+  content: '';
+  position: absolute;
+  left: 27px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--vn-primary) 0%, var(--vn-border) 85%);
+}
+
+.vn-timeline-item {
+  display: flex;
+  gap: 1.5rem;
+  position: relative;
+  padding-bottom: 2.5rem;
+}
+
+.vn-timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.vn-timeline-marker {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background-color: var(--vn-white);
+  border: 2px solid var(--vn-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--vn-font-display);
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--vn-primary);
+  flex-shrink: 0;
+  z-index: 1;
+  box-shadow: var(--vn-shadow-sm);
+}
+
+.vn-timeline-marker-final {
+  background-color: var(--vn-primary);
+  color: var(--vn-white);
+}
+
+.vn-timeline-content {
+  padding-top: 0.6rem;
+}
+
+/* ---------------------------------------------------------
+   Glass feature cards — used on a .vn-mesh-bg section so the
+   translucency/blur is actually visible against something.
+   --------------------------------------------------------- */
+.vn-feature-card-glass {
+  border-radius: var(--vn-radius-lg);
+  padding: var(--vn-space-4);
+  height: 100%;
+  transition: transform var(--vn-duration-base) var(--vn-ease), box-shadow var(--vn-duration-base) var(--vn-ease);
+}
+
+.vn-feature-card-glass:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--vn-shadow-lg);
+}
+
+.vn-feature-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: var(--vn-radius-md);
+  background-color: var(--vn-primary-light);
+  color: var(--vn-primary);
+  margin-bottom: var(--vn-space-3);
+  transition: transform var(--vn-duration-base) var(--vn-ease);
+}
+
+.vn-feature-card-glass:hover .vn-feature-icon-wrap {
+  transform: scale(1.12) rotate(-4deg);
+}
+
+.vn-feature-card-glass.vn-feature-soon .vn-feature-icon-wrap {
+  background-color: var(--vn-bg-subtle);
+  color: var(--vn-ink-muted);
+}
+
+/* ---------------------------------------------------------
+   Premium exam selection cards — the prediction form's "choose
+   your exam" step. Replaces a plain dropdown/buttons with two
+   large selectable cards: icon, name, description, quick stats
+   (CAP rounds / colleges), a subtle animated border-glow on
+   hover, and a distinct checkmark badge when selected.
+   --------------------------------------------------------- */
+.vn-exam-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  text-align: left;
+  background-color: var(--vn-white);
+  border: 2px solid var(--vn-border);
+  border-radius: var(--vn-radius-lg);
+  padding: var(--vn-space-4);
+  cursor: pointer;
+  transition: border-color var(--vn-duration-base) var(--vn-ease), box-shadow var(--vn-duration-base) var(--vn-ease),
+    transform var(--vn-duration-base) var(--vn-ease);
+}
+
+.vn-exam-card:hover {
+  border-color: var(--vn-primary);
+  box-shadow: var(--vn-shadow-glow-primary);
+  transform: translateY(-4px);
+}
+
+.vn-exam-card:focus-visible {
+  outline: 2px solid var(--vn-primary);
+  outline-offset: 3px;
+}
+
+.vn-exam-card-selected,
+.vn-exam-card-selected:hover {
+  border-color: var(--vn-primary);
+  background-color: var(--vn-primary-light);
+  box-shadow: var(--vn-shadow-glow-primary);
+}
+
+.vn-exam-card-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: var(--vn-radius-md);
+  background-color: var(--vn-primary-light);
+  color: var(--vn-primary);
+  margin-bottom: var(--vn-space-3);
+  transition: background-color var(--vn-duration-base) var(--vn-ease), color var(--vn-duration-base) var(--vn-ease);
+}
+
+.vn-exam-card-selected .vn-exam-card-icon-wrap {
+  background-color: var(--vn-primary);
+  color: var(--vn-white);
+}
+
+.vn-exam-card-check {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: var(--vn-primary);
+  color: var(--vn-white);
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity var(--vn-duration-fast) var(--vn-ease), transform var(--vn-duration-fast) var(--vn-ease);
+}
+
+.vn-exam-card-selected .vn-exam-card-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.vn-exam-card-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: var(--vn-space-3);
+}
+
+.vn-exam-card-stat {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--vn-ink-muted);
+  background-color: var(--vn-bg-subtle);
+  border-radius: var(--vn-radius-full);
+  padding: 0.25rem 0.65rem;
+}
+
+.vn-exam-card-selected .vn-exam-card-stat {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+/* ---------------------------------------------------------
+   Hero badge pill — small rounded label above the headline
+   ("Official Maharashtra CAP Predictor"), distinct from the
+   plain-text .vn-eyebrow used elsewhere.
+   --------------------------------------------------------- */
+/* ---------------------------------------------------------
+   Small icon badge — for section headings and inline labels
+   across the app (form sections, result cards, etc.). Distinct
+   from the larger .vn-feature-icon-wrap / .vn-stat-icon-wrap,
+   which are sized for their own specific card contexts.
+   --------------------------------------------------------- */
+/* ---------------------------------------------------------
+   Result page — premium round tabs (pill style, replacing
+   Bootstrap's default underline tabs).
+   --------------------------------------------------------- */
+.vn-round-tabs {
+  border-bottom: none;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.vn-round-tabs .nav-link {
+  border: none;
+  border-radius: var(--vn-radius-full);
+  color: var(--vn-ink-muted);
+  font-weight: 600;
+  padding: 0.6rem 1.4rem;
+  background-color: var(--vn-bg-subtle);
+  transition: background-color var(--vn-duration-fast) var(--vn-ease), color var(--vn-duration-fast) var(--vn-ease);
+}
+
+.vn-round-tabs .nav-link:hover {
+  color: var(--vn-ink);
+}
+
+.vn-round-tabs .nav-link.active {
+  background-color: var(--vn-primary);
+  color: var(--vn-white);
+}
+
+/* ---------------------------------------------------------
+   Chance overview — a per-round breakdown of how many colleges
+   fall into each band, as animated horizontal bars rather than
+   a plain count list ("Charts / Progress / Probability" from
+   the brief, without a canvas-based charting dependency).
+   --------------------------------------------------------- */
+.vn-chance-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-bottom: var(--vn-space-4);
+}
+
+.vn-chance-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.vn-chance-bar-label {
+  width: 96px;
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--vn-ink);
+}
+
+.vn-chance-bar-track {
+  flex: 1;
+  height: 10px;
+  background-color: var(--vn-bg-subtle);
+  border-radius: var(--vn-radius-full);
+  overflow: hidden;
+}
+
+.vn-chance-bar-fill {
+  height: 100%;
+  border-radius: var(--vn-radius-full);
+  width: 0;
+  transition: width 900ms var(--vn-ease);
+}
+
+.vn-chance-fill-success {
+  background-color: var(--vn-success);
+}
+.vn-chance-fill-primary {
+  background-color: var(--vn-primary);
+}
+.vn-chance-fill-warning {
+  background-color: var(--vn-warning);
+}
+.vn-chance-fill-danger {
+  background-color: var(--vn-danger);
+}
+
+.vn-chance-bar-count {
+  width: 28px;
+  text-align: right;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  color: var(--vn-ink);
+}
+
+/* ---------------------------------------------------------
+   Premium college result card.
+   --------------------------------------------------------- */
+.vn-college-card-premium {
+  border-radius: var(--vn-radius-lg);
+  border: 1px solid var(--vn-border);
+  padding: var(--vn-space-4);
+  height: 100%;
+  transition: transform var(--vn-duration-base) var(--vn-ease), box-shadow var(--vn-duration-base) var(--vn-ease);
+}
+
+.vn-college-card-premium:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--vn-shadow-md);
+}
+
+.vn-college-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--vn-radius-md);
+  background-color: var(--vn-primary-light);
+  color: var(--vn-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ---------------------------------------------------------
+   Recommended preference order — a list of premium rows
+   replacing a plain data table.
+   --------------------------------------------------------- */
+.vn-preference-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: var(--vn-radius-md);
+  border: 1px solid var(--vn-border);
+  background-color: var(--vn-white);
+  margin-bottom: 0.6rem;
+  transition: box-shadow var(--vn-duration-fast) var(--vn-ease), transform var(--vn-duration-fast) var(--vn-ease);
+}
+
+.vn-preference-row:hover {
+  box-shadow: var(--vn-shadow-sm);
+  transform: translateX(2px);
+}
+
+.vn-preference-rank {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--vn-primary-light);
+  color: var(--vn-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+/* ---------------------------------------------------------
+   College Details — hero banner + large avatar. No real photo
+   or logo exists for colleges in this system, so a mesh-gradient
+   banner + stylized icon avatar stands in honestly, rather than
+   a placeholder photo that could look like a broken image.
+   --------------------------------------------------------- */
+.vn-college-hero-banner {
+  background: linear-gradient(120deg, var(--vn-primary-light), var(--vn-bg-subtle));
+  border-radius: var(--vn-radius-lg);
+  padding: var(--vn-space-5) var(--vn-space-4) var(--vn-space-4);
+  position: relative;
+  overflow: hidden;
+}
+
+.vn-college-avatar-lg {
+  width: 84px;
+  height: 84px;
+  border-radius: var(--vn-radius-lg);
+  background-color: var(--vn-white);
+  border: 1px solid var(--vn-border);
+  color: var(--vn-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: var(--vn-shadow-md);
+}
+
+.vn-icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--vn-radius-sm);
+  background-color: var(--vn-primary-light);
+  color: var(--vn-primary);
+  flex-shrink: 0;
+}
+
+.vn-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--vn-primary-light);
+  color: var(--vn-primary);
+  border-radius: var(--vn-radius-full);
+  padding: 0.4rem 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------------
+   Trust indicator row — small check + label pairs under the
+   hero subtitle.
+   --------------------------------------------------------- */
+.vn-trust-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--vn-ink-muted);
+}
+
+.vn-trust-item svg {
+  color: var(--vn-success);
+  flex-shrink: 0;
+}
+
+/* ---------------------------------------------------------
+   Hero dashboard mockup — the animated "premium dashboard"
+   replacing a static illustration. A floating card with a
+   browser-chrome-style header and a vertical step checklist
+   that cycles automatically (see initStepCycle in
+   premium-ui.js) to suggest the product "working" in real time.
+   --------------------------------------------------------- */
+.vn-hero-mockup {
+  background-color: var(--vn-white);
+  border: 1px solid var(--vn-border);
+  border-radius: var(--vn-radius-lg);
+  box-shadow: var(--vn-shadow-lg);
+  overflow: hidden;
+  position: relative;
+}
+
+.vn-mockup-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.9rem 1.1rem;
+  border-bottom: 1px solid var(--vn-border);
+  background-color: var(--vn-bg-subtle);
+}
+
+.vn-mockup-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background-color: var(--vn-border);
+}
+
+.vn-mockup-title {
+  margin-left: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--vn-ink-muted);
+}
+
+.vn-mockup-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.vn-step-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: var(--vn-radius-sm);
+  opacity: 0.45;
+  transform: translateX(0);
+  transition: opacity var(--vn-duration-base) var(--vn-ease), background-color var(--vn-duration-base) var(--vn-ease);
+}
+
+.vn-step-row.vn-step-active {
+  opacity: 1;
+  background-color: var(--vn-primary-light);
+}
+
+.vn-step-row.vn-step-done {
+  opacity: 0.85;
+}
+
+.vn-step-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: var(--vn-border);
+  color: var(--vn-ink-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: background-color var(--vn-duration-base) var(--vn-ease), color var(--vn-duration-base) var(--vn-ease);
+}
+
+.vn-step-row.vn-step-active .vn-step-icon,
+.vn-step-row.vn-step-done .vn-step-icon {
+  background-color: var(--vn-primary);
+  color: var(--vn-white);
+}
+
+.vn-step-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--vn-ink);
+  flex: 1;
+}
+
+.vn-step-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--vn-radius-full);
+  background-color: var(--vn-white);
+  border: 1px solid var(--vn-border);
+  color: var(--vn-ink-muted);
+  margin-left: 4px;
+}
+
+.vn-step-row.vn-step-active .vn-step-chip.vn-step-chip-selected {
+  background-color: var(--vn-primary);
+  border-color: var(--vn-primary);
+  color: var(--vn-white);
+}
+
+.vn-step-chip-success {
+  background-color: var(--vn-success-bg);
+  border-color: transparent;
+  color: var(--vn-success);
+}
+
+/* Small floating accent cards around the main mockup —
+   decorative only, purely visual flourish. */
+.vn-floating-chip {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--vn-white);
+  border: 1px solid var(--vn-border);
+  border-radius: var(--vn-radius-md);
+  box-shadow: var(--vn-shadow-md);
+  padding: 0.6rem 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--vn-ink);
+  z-index: 2;
+}
+
+@media (max-width: 767px) {
+  .vn-floating-chip {
+    display: none;
+  }
+}
+.vn-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  transition: padding var(--vn-duration-base) var(--vn-ease), box-shadow var(--vn-duration-base) var(--vn-ease),
+    background-color var(--vn-duration-base) var(--vn-ease);
+}
+
+.vn-navbar .navbar {
+  transition: padding var(--vn-duration-base) var(--vn-ease);
+}
+
+.vn-navbar-scrolled {
+  box-shadow: var(--vn-shadow-md);
+}
+
+.vn-navbar-scrolled .navbar {
+  padding-top: 0.4rem !important;
+  padding-bottom: 0.4rem !important;
+}
+
+/* ---------------------------------------------------------
+   Navbar — brand mark, nav link hover state, mobile toggle.
+   --------------------------------------------------------- */
+.vn-navbar {
+  border-bottom: 1px solid var(--vn-border);
+}
+
+.vn-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--vn-radius-sm);
+  background: linear-gradient(135deg, var(--vn-primary), var(--vn-secondary));
+  color: var(--vn-white);
+  flex-shrink: 0;
+}
+
+.vn-nav-link {
+  position: relative;
+  color: var(--vn-ink-muted);
+  font-weight: 500;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--vn-radius-sm);
+  transition: color var(--vn-duration-fast) var(--vn-ease), background-color var(--vn-duration-fast) var(--vn-ease);
+}
+
+.vn-nav-link:hover {
+  color: var(--vn-ink);
+  background-color: var(--vn-bg-subtle);
+}
+
+.vn-navbar-toggler {
+  border: 1px solid var(--vn-border);
+  border-radius: var(--vn-radius-sm);
+  padding: 0.35rem 0.6rem;
+}
+
+.vn-navbar-toggler:focus {
+  box-shadow: 0 0 0 3px var(--vn-primary-light);
+}
+
+/* ---------------------------------------------------------
+   Footer — kept light (per "light mode only"), just elevated
+   with the new tokens: clearer hierarchy, a subtle top border,
+   softer link styling.
+   --------------------------------------------------------- */
+.vn-footer {
+  background-color: var(--vn-bg-subtle);
+  border-top: 1px solid var(--vn-border);
+}
+
+.vn-footer a {
+  color: var(--vn-ink-muted);
+  transition: color var(--vn-duration-fast) var(--vn-ease);
+}
+
+.vn-footer a:hover {
+  color: var(--vn-primary);
+}
+
+.vn-footer-heading {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--vn-ink);
+}
+
+/* Respect reduced-motion: disable the continuous/decorative
+   animations specifically (float, entrance animations) — the
+   global rule in style.css already turns off transitions too,
+   this just also stops infinite keyframe loops explicitly. */
+@media (prefers-reduced-motion: reduce) {
+  .vn-float,
+  .vn-animate-fade-in,
+  .vn-animate-slide-up,
+  .vn-animate-scale-in {
+    animation: none !important;
+  }
+}

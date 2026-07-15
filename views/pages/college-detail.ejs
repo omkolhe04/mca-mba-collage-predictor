@@ -1,0 +1,304 @@
+<section class="vn-section pb-3">
+  <div class="container">
+    <div class="vn-college-hero-banner mb-4">
+      <a href="javascript:history.back()" class="btn btn-vn-outline btn-sm mb-3">&larr; Back to Results</a>
+      <div class="d-flex flex-wrap align-items-start gap-3">
+        <span class="vn-college-avatar-lg">
+          <%- icon('building-2', { class: 'vn-icon-lg' }) %>
+        </span>
+        <div class="flex-grow-1">
+          <h1 class="h3 mb-1"><%= college.name %></h1>
+          <p class="mb-2" style="color: var(--vn-ink-muted);">
+            <% if (college.city) { %><%= college.city %><% } %>
+            <% if (universityName) { %> &middot; <%= universityName %><% } %>
+          </p>
+          <div class="d-flex flex-wrap gap-2">
+            <% if (college.naac_grade) { %><span class="vn-badge vn-badge-success">NAAC <%= college.naac_grade %></span><% } %>
+            <% if (college.nba_accredited) { %><span class="vn-badge vn-badge-success">NBA Accredited</span><% } %>
+            <% if (college.aicte_approved) { %><span class="vn-badge vn-badge-success">AICTE Approved</span><% } %>
+            <% if (college.autonomous) { %><span class="vn-badge vn-badge-success">Autonomous</span><% } %>
+            <% if (college.hostel_available) { %><span class="vn-badge vn-badge-success">Hostel Available</span><% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= Key Statistics ================= -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-lg-3">
+        <div class="vn-stat-card-premium">
+          <span class="vn-stat-icon-wrap"><%- icon('calendar', { class: 'vn-icon-md' }) %></span>
+          <div class="vn-stat-number" style="font-size: 1.5rem;"><%= college.established_year || '—' %></div>
+          <p class="vn-stat-label mb-0">Established</p>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="vn-stat-card-premium">
+          <span class="vn-stat-icon-wrap"><%- icon('users', { class: 'vn-icon-md' }) %></span>
+          <div class="vn-stat-number" style="font-size: 1.5rem;"><%= college.intake_capacity || '—' %></div>
+          <p class="vn-stat-label mb-0">Intake Capacity</p>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="vn-stat-card-premium">
+          <span class="vn-stat-icon-wrap"><%- icon('trending-up', { class: 'vn-icon-md' }) %></span>
+          <div class="vn-stat-number" style="font-size: 1.5rem;"><%= placement && placement.average_package_lpa != null ? Number(placement.average_package_lpa) + ' LPA' : '—' %></div>
+          <p class="vn-stat-label mb-0">Avg Package</p>
+        </div>
+      </div>
+      <div class="col-6 col-lg-3">
+        <div class="vn-stat-card-premium">
+          <span class="vn-stat-icon-wrap"><%- icon('shield', { class: 'vn-icon-md' }) %></span>
+          <div class="vn-stat-number" style="font-size: 1.5rem;"><%= college.naac_grade || '—' %></div>
+          <p class="vn-stat-label mb-0">NAAC Grade</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="vn-section pt-0">
+  <div class="container">
+    <ul class="nav vn-round-tabs mb-4" id="detailTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="tab-overview" data-bs-toggle="tab" data-bs-target="#pane-overview" type="button" role="tab">Overview</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-placements" data-bs-toggle="tab" data-bs-target="#pane-placements" type="button" role="tab">Placements</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-fees" data-bs-toggle="tab" data-bs-target="#pane-fees" type="button" role="tab">Fees</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-cutoffs" data-bs-toggle="tab" data-bs-target="#pane-cutoffs" type="button" role="tab">CAP Cutoffs</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-facilities" data-bs-toggle="tab" data-bs-target="#pane-facilities" type="button" role="tab">Facilities</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-location" data-bs-toggle="tab" data-bs-target="#pane-location" type="button" role="tab">Location</button>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+
+      <!-- ================= Overview ================= -->
+      <div class="tab-pane fade show active" id="pane-overview" role="tabpanel">
+        <div class="vn-card">
+          <dl class="row small mb-0">
+            <% if (college.address) { %>
+              <dt class="col-4" style="color: var(--vn-ink-muted);">Address</dt>
+              <dd class="col-8"><%= college.address %><% if (college.district) { %>, <%= college.district %><% } %></dd>
+            <% } %>
+            <% if (universityName) { %>
+              <dt class="col-4" style="color: var(--vn-ink-muted);">University</dt>
+              <dd class="col-8"><%= universityName %></dd>
+            <% } %>
+            <% if (college.established_year) { %>
+              <dt class="col-4" style="color: var(--vn-ink-muted);">Established</dt>
+              <dd class="col-8"><%= college.established_year %></dd>
+            <% } %>
+            <% if (college.intake_capacity) { %>
+              <dt class="col-4" style="color: var(--vn-ink-muted);">Intake Capacity</dt>
+              <dd class="col-8"><%= college.intake_capacity %></dd>
+            <% } %>
+            <% if (!college.address && !college.established_year && !college.intake_capacity) { %>
+              <p class="small mb-0" style="color: var(--vn-ink-muted);">No additional overview details available yet.</p>
+            <% } %>
+          </dl>
+        </div>
+      </div>
+
+      <!-- ================= Placements ================= -->
+      <div class="tab-pane fade" id="pane-placements" role="tabpanel">
+        <div class="vn-card">
+          <% if (!placement) { %>
+            <p class="small mb-0" style="color: var(--vn-ink-muted);">No placement data available yet.</p>
+          <% } else { %>
+            <dl class="row small mb-0">
+              <dt class="col-6" style="color: var(--vn-ink-muted);">Academic Year</dt>
+              <dd class="col-6"><%= placement.academic_year %></dd>
+
+              <% if (placement.average_package_lpa != null) { %>
+                <dt class="col-6" style="color: var(--vn-ink-muted);">Average Package</dt>
+                <dd class="col-6"><%= Number(placement.average_package_lpa) %> LPA</dd>
+              <% } %>
+
+              <% if (placement.highest_package_lpa != null) { %>
+                <dt class="col-6" style="color: var(--vn-ink-muted);">Highest Package</dt>
+                <dd class="col-6"><%= Number(placement.highest_package_lpa) %> LPA</dd>
+              <% } %>
+
+              <% if (placement.students_placed != null && placement.total_eligible != null) { %>
+                <dt class="col-6" style="color: var(--vn-ink-muted);">Students Placed</dt>
+                <dd class="col-6"><%= placement.students_placed %> / <%= placement.total_eligible %></dd>
+              <% } %>
+            </dl>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- ================= Fees ================= -->
+      <div class="tab-pane fade" id="pane-fees" role="tabpanel">
+        <div class="vn-card">
+          <% if (!fees.length) { %>
+            <p class="small mb-0" style="color: var(--vn-ink-muted);">No fee data available yet.</p>
+          <% } else { %>
+            <div class="table-responsive">
+              <table class="table align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Academic Year</th>
+                    <th>Annual Fee</th>
+                    <th>Total Course Fee</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% fees.forEach(function (fee) { %>
+                    <tr>
+                      <td><%= fee.categoryLabel %></td>
+                      <td><%= fee.academicYear %></td>
+                      <td><%= fee.annualFee != null ? '&#8377;' + fee.annualFee.toLocaleString('en-IN') : '—' %></td>
+                      <td><%= fee.totalCourseFee != null ? '&#8377;' + fee.totalCourseFee.toLocaleString('en-IN') : '—' %></td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- ================= CAP Cutoffs ================= -->
+      <div class="tab-pane fade" id="pane-cutoffs" role="tabpanel">
+        <div class="vn-card">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+            <h2 class="h6 mb-0" style="text-transform: uppercase; letter-spacing: 0.04em; color: var(--vn-ink-muted);">
+              Category-wise CAP Cutoffs <% if (latestYear) { %>(<%= latestYear %>)<% } %>
+            </h2>
+
+            <% if (filterCategories.length > 0) { %>
+              <div class="d-flex align-items-center gap-2">
+                <label for="categoryFilter" class="small mb-0" style="color: var(--vn-ink-muted);">Category:</label>
+                <select id="categoryFilter" class="form-select form-select-sm" style="width: auto;">
+                  <option value="all">All Categories</option>
+                  <% filterCategories.forEach(function (cat) { %>
+                    <option value="<%= cat.id %>"><%= cat.name %></option>
+                  <% }) %>
+                </select>
+              </div>
+            <% } %>
+          </div>
+
+          <% if (!latestYear || cutoffTables.length === 0) { %>
+            <p class="small mb-0" style="color: var(--vn-ink-muted);">
+              No CAP cutoff data has been imported for this college yet.
+            </p>
+          <% } else { %>
+            <% cutoffTables.forEach(function (table) { %>
+              <% if (cutoffTables.length > 1) { %>
+                <h3 class="h6 mt-3 mb-2"><%= table.branchName %></h3>
+              <% } %>
+              <div class="table-responsive mb-3">
+                <table class="table align-middle mb-0 cutoff-table">
+                  <thead>
+                    <tr>
+                      <th>Category</th>
+                      <% CAP_ROUNDS.forEach(function (roundCode, idx) { %>
+                        <th>CAP Round <%= idx + 1 %></th>
+                      <% }) %>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% table.rows.forEach(function (row) { %>
+                      <tr data-category-id="<%= row.categoryId %>">
+                        <td><%= row.categoryName %></td>
+                        <% row.cells.forEach(function (cell) { %>
+                          <td>
+                            <% if (!cell || cell.percentile === null) { %>
+                              <span style="color: var(--vn-ink-muted);">—</span>
+                            <% } else { %>
+                              <%= cell.percentile %>
+                              <% if (cell.rank !== null) { %>
+                                <div class="small" style="color: var(--vn-ink-muted);">Rank <%= cell.rank %></div>
+                              <% } %>
+                            <% } %>
+                          </td>
+                        <% }) %>
+                      </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+              </div>
+            <% }) %>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- ================= Facilities ================= -->
+      <div class="tab-pane fade" id="pane-facilities" role="tabpanel">
+        <div class="vn-card">
+          <% const facilities = [
+            { label: 'NAAC Accreditation', value: college.naac_grade ? 'Grade ' + college.naac_grade : 'Not available', ok: !!college.naac_grade },
+            { label: 'NBA Accredited', value: college.nba_accredited ? 'Yes' : 'Not available', ok: college.nba_accredited },
+            { label: 'AICTE Approved', value: college.aicte_approved ? 'Yes' : 'Not available', ok: college.aicte_approved },
+            { label: 'Autonomous Status', value: college.autonomous ? 'Autonomous' : 'Affiliated', ok: college.autonomous },
+            { label: 'Hostel', value: college.hostel_available ? 'Available' : 'Not available', ok: college.hostel_available },
+          ]; %>
+          <div class="row g-3">
+            <% facilities.forEach(function (f) { %>
+              <div class="col-12 col-sm-6">
+                <div class="d-flex align-items-center gap-3 p-2">
+                  <span class="vn-icon-badge" style="<%= f.ok ? '' : 'background-color: var(--vn-bg-subtle); color: var(--vn-ink-muted);' %>">
+                    <%- icon(f.ok ? 'check' : 'x', { class: 'vn-icon-sm' }) %>
+                  </span>
+                  <div>
+                    <p class="mb-0 fw-semibold small"><%= f.label %></p>
+                    <p class="mb-0 small" style="color: var(--vn-ink-muted);"><%= f.value %></p>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Location ================= -->
+      <div class="tab-pane fade" id="pane-location" role="tabpanel">
+        <div class="vn-card">
+          <% if (!college.address && !college.website_url && !college.google_maps_url) { %>
+            <p class="small mb-0" style="color: var(--vn-ink-muted);">No location details available yet.</p>
+          <% } else { %>
+            <% if (college.address) { %>
+              <div class="d-flex align-items-start gap-3 mb-3">
+                <span class="vn-icon-badge"><%- icon('map-pin', { class: 'vn-icon-sm' }) %></span>
+                <div>
+                  <p class="mb-0 fw-semibold small">Address</p>
+                  <p class="mb-0 small" style="color: var(--vn-ink-muted);">
+                    <%= college.address %><% if (college.district) { %>, <%= college.district %><% } %>
+                  </p>
+                </div>
+              </div>
+            <% } %>
+            <% if (college.google_maps_url) { %>
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <span class="vn-icon-badge"><%- icon('map-pin', { class: 'vn-icon-sm' }) %></span>
+                <a href="<%= college.google_maps_url %>" target="_blank" rel="noopener noreferrer">View on Google Maps &#8599;</a>
+              </div>
+            <% } %>
+            <% if (college.website_url) { %>
+              <div class="d-flex align-items-center gap-3">
+                <span class="vn-icon-badge"><%- icon('globe', { class: 'vn-icon-sm' }) %></span>
+                <a href="<%= college.website_url %>" target="_blank" rel="noopener noreferrer">Visit website &#8599;</a>
+              </div>
+            <% } %>
+          <% } %>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script src="<%= url('/js/college-detail.js') %>"></script>

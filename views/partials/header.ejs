@@ -1,0 +1,55 @@
+<header class="vn-navbar vn-glass">
+  <nav class="navbar navbar-expand-lg">
+    <div class="container py-2">
+      <a
+        class="navbar-brand"
+        href="<%= url('/') %>"
+      >
+        <%- include('./brand-lockup', { variant: 'navbar' }) %>
+      </a>
+      <button
+        class="navbar-toggler vn-navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#vnNavbar"
+        aria-controls="vnNavbar"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="vnNavbar">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center gap-lg-1">
+          <li class="nav-item">
+            <a class="nav-link vn-nav-link" href="<%= url('/') %>">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link vn-nav-link" href="<%= url('/#colleges') %>">Colleges</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link vn-nav-link" href="<%= url('/#about') %>">About</a>
+          </li>
+          <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+            <% if (typeof latestPrediction !== 'undefined' && latestPrediction) { %>
+              <a
+                class="btn btn-vn-primary vn-magnetic vn-ripple-container d-inline-flex align-items-center gap-2"
+                href="<%= url('/predict?new=true') %>"
+              >
+                <%- icon('sparkles', { class: 'vn-icon-xs' }) %>
+                New Prediction
+              </a>
+            <% } else { %>
+              <a
+                class="btn btn-vn-primary vn-magnetic vn-ripple-container d-inline-flex align-items-center gap-2"
+                href="<%= url('/predict') %>"
+              >
+                Start Prediction
+                <%- icon('arrow-right', { class: 'vn-icon-xs' }) %>
+              </a>
+            <% } %>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>

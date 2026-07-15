@@ -1,0 +1,39 @@
+<%
+/**
+ * Reusable brand lockup — logo + title ("MCA | MBA College
+ * Predictor") + optional subtitle ("By VidyaNITI Education").
+ * One component, used everywhere branding appears (navbar,
+ * footer, hero, admin sidebar), so updating the name/logo later
+ * only ever means editing this one file.
+ *
+ * Locals:
+ *   variant     - 'navbar' | 'footer' | 'hero' | 'admin' (default: 'footer')
+ *   subtitle    - boolean, show "By VidyaNITI Education" (default: true, forced false for 'admin')
+ *   showLogo    - boolean, show the logo image (default: true, forced false for 'navbar' — text-only there per explicit request)
+ *
+ * LOGO NOTE: the logo file (public/images/logo.png) has an
+ * opaque white background (confirmed — no real transparency),
+ * so on the admin sidebar's dark background it's wrapped in a
+ * small white rounded card to look intentional rather than like
+ * a stray white box. Every other context (footer, hero) has a
+ * white page background already, so the logo sits directly on it
+ * with no wrapper needed.
+ */
+const lockupVariant = typeof variant !== 'undefined' ? variant : 'footer';
+const shouldShowLogo = typeof showLogo !== 'undefined' ? showLogo : lockupVariant !== 'navbar';
+const showSubtitle = typeof subtitle !== 'undefined' ? subtitle : lockupVariant !== 'admin';
+const needsWhiteCard = lockupVariant === 'admin';
+%>
+<div class="vn-brand-lockup vn-brand-lockup-<%= lockupVariant %>">
+  <% if (shouldShowLogo) { %>
+    <span class="vn-brand-logo-wrap <%= needsWhiteCard ? 'vn-brand-logo-card' : '' %>">
+      <img src="<%= url('/images/logo.png') %>" alt="VidyaNITI Education" class="vn-brand-logo-img" />
+    </span>
+  <% } %>
+  <div class="vn-brand-text">
+    <span class="vn-brand-title">MCA | MBA College Predictor</span>
+    <% if (showSubtitle) { %>
+      <span class="vn-brand-subtitle">By VidyaNITI Education</span>
+    <% } %>
+  </div>
+</div>

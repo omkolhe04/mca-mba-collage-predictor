@@ -1,0 +1,62 @@
+<%
+  const details = collegeDetails.get(entry.collegeId) || {};
+  const meta = CHANCE_BUCKET_META[chanceKey];
+%>
+<div class="col-12 col-md-6">
+  <div class="vn-college-card-premium">
+    <div class="d-flex justify-content-between align-items-start mb-3 gap-2">
+      <div class="d-flex align-items-start gap-3">
+        <span class="vn-college-avatar"><%- icon('building-2', { class: 'vn-icon-sm' }) %></span>
+        <div>
+          <h3 class="h6 mb-0"><%= entry.collegeName %></h3>
+          <% if (entry.city) { %>
+            <p class="small mb-0" style="color: var(--vn-ink-muted);"><%= entry.city %></p>
+          <% } %>
+        </div>
+      </div>
+      <span class="vn-badge <%= meta.badgeClass %> flex-shrink-0"><%= meta.label %></span>
+    </div>
+
+    <dl class="row small mb-2">
+      <dt class="col-6" style="color: var(--vn-ink-muted);">Previous Cutoff</dt>
+      <dd class="col-6"><%= entry.cutoffPercentile %></dd>
+
+      <dt class="col-6" style="color: var(--vn-ink-muted);">Difference</dt>
+      <dd class="col-6"><%= entry.difference > 0 ? '+' : '' %><%= entry.difference %></dd>
+
+      <% if (details.annualFee != null) { %>
+        <dt class="col-6" style="color: var(--vn-ink-muted);">Annual Fees</dt>
+        <dd class="col-6">&#8377;<%= details.annualFee.toLocaleString('en-IN') %></dd>
+      <% } %>
+
+      <% if (details.averagePackageLpa != null) { %>
+        <dt class="col-6" style="color: var(--vn-ink-muted);">Avg Package</dt>
+        <dd class="col-6"><%= details.averagePackageLpa %> LPA</dd>
+      <% } %>
+
+      <% if (details.highestPackageLpa != null) { %>
+        <dt class="col-6" style="color: var(--vn-ink-muted);">Highest Package</dt>
+        <dd class="col-6"><%= details.highestPackageLpa %> LPA</dd>
+      <% } %>
+
+      <% if (details.naacGrade) { %>
+        <dt class="col-6" style="color: var(--vn-ink-muted);">NAAC</dt>
+        <dd class="col-6"><%= details.naacGrade %></dd>
+      <% } %>
+    </dl>
+
+    <% if (details.autonomous || details.hostelAvailable) { %>
+      <div class="d-flex flex-wrap gap-2 mb-3">
+        <% if (details.autonomous) { %><span class="vn-badge vn-badge-success">Autonomous</span><% } %>
+        <% if (details.hostelAvailable) { %><span class="vn-badge vn-badge-success">Hostel</span><% } %>
+      </div>
+    <% } %>
+
+    <a
+      href="<%= url('/colleges/' + entry.collegeId) %>"
+      class="btn btn-vn-outline btn-sm w-100"
+    >
+      View Details
+    </a>
+  </div>
+</div>

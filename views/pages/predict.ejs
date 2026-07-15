@@ -1,0 +1,294 @@
+<section class="vn-section">
+  <div class="container vn-container-narrow">
+    <div class="text-center mb-5">
+      <p class="vn-eyebrow mb-2">Prediction Form</p>
+      <h1 class="h2 mb-2">Tell us about your CET result</h1>
+      <p style="color: var(--vn-ink-muted);">
+        Takes about 2 minutes. No account, no password — just your details.
+      </p>
+    </div>
+
+    <form
+      action="<%= url('/predict') %>"
+      method="POST"
+      novalidate
+      id="predictionForm"
+      data-colleges-api="<%= url('/api/colleges') %>"
+    >
+      <!-- ================= Personal Details ================= -->
+      <div class="vn-card mb-4">
+        <h2 class="h5 mb-4 d-flex align-items-center gap-2">
+          <span class="vn-icon-badge"><%- icon('users', { class: 'vn-icon-sm' }) %></span>
+          Personal Details
+        </h2>
+
+        <div class="row g-3">
+          <div class="col-12">
+            <label for="name" class="form-label">Full Name</label>
+            <input
+              type="text"
+              class="form-control <%= errors.name ? 'is-invalid' : '' %>"
+              id="name"
+              name="name"
+              value="<%= formValues.name || '' %>"
+              required
+            />
+            <% if (errors.name) { %>
+              <div class="invalid-feedback"><%= errors.name.msg %></div>
+            <% } %>
+          </div>
+
+          <div class="col-12 col-sm-6">
+            <label for="mobile" class="form-label">Mobile Number</label>
+            <input
+              type="tel"
+              class="form-control <%= errors.mobile ? 'is-invalid' : '' %>"
+              id="mobile"
+              name="mobile"
+              inputmode="numeric"
+              maxlength="10"
+              placeholder="10-digit mobile number"
+              value="<%= formValues.mobile || '' %>"
+              required
+            />
+            <% if (errors.mobile) { %>
+              <div class="invalid-feedback"><%= errors.mobile.msg %></div>
+            <% } %>
+          </div>
+
+          <div class="col-12 col-sm-6">
+            <label for="email" class="form-label">Email Address</label>
+            <input
+              type="email"
+              class="form-control <%= errors.email ? 'is-invalid' : '' %>"
+              id="email"
+              name="email"
+              value="<%= formValues.email || '' %>"
+              required
+            />
+            <% if (errors.email) { %>
+              <div class="invalid-feedback"><%= errors.email.msg %></div>
+            <% } %>
+          </div>
+
+          <div class="col-12 col-sm-6">
+            <label for="gender" class="form-label">Gender</label>
+            <select
+              class="form-select <%= errors.gender ? 'is-invalid' : '' %>"
+              id="gender"
+              name="gender"
+              required
+            >
+              <option value="" disabled <%= !formValues.gender ? 'selected' : '' %>>Select gender</option>
+              <% ['Male', 'Female', 'Transgender'].forEach(function(g) { %>
+                <option value="<%= g %>" <%= formValues.gender === g ? 'selected' : '' %>><%= g %></option>
+              <% }) %>
+            </select>
+            <% if (errors.gender) { %>
+              <div class="invalid-feedback"><%= errors.gender.msg %></div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Exam & Category ================= -->
+      <div class="vn-card mb-4">
+        <h2 class="h5 mb-1 d-flex align-items-center gap-2">
+          <span class="vn-icon-badge"><%- icon('graduation-cap', { class: 'vn-icon-sm' }) %></span>
+          Exam &amp; Category
+        </h2>
+        <p class="small mb-3" style="color: var(--vn-ink-muted);">First, tell us which exam this prediction is for.</p>
+
+        <input type="hidden" id="examTypeCode" name="examTypeCode" value="<%= selectedExamCode %>" />
+
+        <%
+          // Presentation-only data (not stored in the database —
+          // no schema change for this purely visual redesign).
+          // Falls back gracefully for any future exam type
+          // (Engineering, Pharmacy, etc.) that doesn't have a
+          // specific entry yet.
+          const examDescriptions = {
+            MCA_CET: 'Master of Computer Applications',
+            MBA_CET: 'Master of Business Administration',
+          };
+          const examIcons = {
+            MCA_CET: 'graduation-cap',
+            MBA_CET: 'briefcase',
+          };
+        %>
+
+        <div class="row g-3 mb-4">
+          <% examTypes.forEach(function (et) { %>
+            <div class="col-12 col-sm-6">
+              <button
+                type="button"
+                class="vn-exam-card exam-type-btn <%= et.code === selectedExamCode ? 'vn-exam-card-selected' : '' %>"
+                data-exam-code="<%= et.code %>"
+                data-exam-name="<%= et.name %>"
+              >
+                <span class="vn-exam-card-check"><%- icon('check', { class: 'vn-icon-xs' }) %></span>
+                <span class="vn-exam-card-icon-wrap"><%- icon(examIcons[et.code] || 'graduation-cap', { class: 'vn-icon-md' }) %></span>
+                <h3 class="h6 mb-1"><%= et.name %></h3>
+                <p class="small mb-0" style="color: var(--vn-ink-muted);"><%= examDescriptions[et.code] || 'CAP Admission Exam' %></p>
+                <div class="vn-exam-card-stats">
+                  <span class="vn-exam-card-stat"><%= et.cap_rounds %> CAP Rounds</span>
+                  <span class="vn-exam-card-stat"><%= et.collegeCount > 0 ? et.collegeCount + ' Colleges' : 'Data Coming Soon' %></span>
+                </div>
+              </button>
+            </div>
+          <% }) %>
+        </div>
+        <% if (errors.examTypeCode) { %>
+          <div class="small mb-3" style="color: var(--vn-danger);"><%= errors.examTypeCode.msg %></div>
+        <% } %>
+
+        <div class="row g-3">
+          <div class="col-12 col-sm-6">
+            <label for="percentile" class="form-label"><span id="percentileLabelText"><%= (examTypes.find(function(e){ return e.code === selectedExamCode; }) || {}).name || 'Exam' %></span> Percentile</label>
+            <input
+              type="text"
+              class="form-control <%= errors.percentile ? 'is-invalid' : '' %>"
+              id="percentile"
+              name="percentile"
+              inputmode="decimal"
+              placeholder="e.g. 92.4567890"
+              value="<%= formValues.percentile || '' %>"
+              required
+            />
+            <% if (errors.percentile) { %>
+              <div class="invalid-feedback"><%= errors.percentile.msg %></div>
+            <% } %>
+          </div>
+
+          <div class="col-12 col-sm-6">
+            <label for="categoryId" class="form-label">Category</label>
+            <select
+              class="form-select <%= errors.categoryId ? 'is-invalid' : '' %>"
+              id="categoryId"
+              name="categoryId"
+              required
+            >
+              <option value="" disabled <%= !formValues.categoryId ? 'selected' : '' %>>Select category</option>
+              <% categories.forEach(function(cat) { %>
+                <option value="<%= cat.id %>" <%= formValues.categoryId === cat.id ? 'selected' : '' %>><%= cat.name %></option>
+              <% }) %>
+            </select>
+            <% if (errors.categoryId) { %>
+              <div class="invalid-feedback"><%= errors.categoryId.msg %></div>
+            <% } %>
+            <% if (categories.length === 0) { %>
+              <div class="form-text text-warning">No categories loaded yet — run the database seeds.</div>
+            <% } %>
+          </div>
+
+          <div class="col-12 col-sm-6">
+            <label for="homeUniversityId" class="form-label">Home University</label>
+            <select
+              class="form-select <%= errors.homeUniversityId ? 'is-invalid' : '' %>"
+              id="homeUniversityId"
+              name="homeUniversityId"
+              required
+            >
+              <option value="" disabled <%= !formValues.homeUniversityId ? 'selected' : '' %>>Select home university</option>
+              <% universities.forEach(function(uni) { %>
+                <option value="<%= uni.id %>" <%= formValues.homeUniversityId === uni.id ? 'selected' : '' %>><%= uni.name %></option>
+              <% }) %>
+            </select>
+            <% if (errors.homeUniversityId) { %>
+              <div class="invalid-feedback"><%= errors.homeUniversityId.msg %></div>
+            <% } %>
+          </div>
+
+          <div class="col-12 col-sm-6">
+            <label for="admissionUniversityId" class="form-label">Admission University</label>
+            <select
+              class="form-select <%= errors.admissionUniversityId ? 'is-invalid' : '' %>"
+              id="admissionUniversityId"
+              name="admissionUniversityId"
+              required
+            >
+              <option value="" disabled <%= !formValues.admissionUniversityId ? 'selected' : '' %>>Select admission university</option>
+              <% universities.forEach(function(uni) { %>
+                <option value="<%= uni.id %>" <%= formValues.admissionUniversityId === uni.id ? 'selected' : '' %>><%= uni.name %></option>
+              <% }) %>
+            </select>
+            <% if (errors.admissionUniversityId) { %>
+              <div class="invalid-feedback"><%= errors.admissionUniversityId.msg %></div>
+            <% } %>
+          </div>
+
+          <div class="col-12">
+            <label for="dreamCollegeId" class="form-label">Dream College <span class="text-muted small">(optional)</span></label>
+            <select
+              class="form-select <%= errors.dreamCollegeId ? 'is-invalid' : '' %>"
+              id="dreamCollegeId"
+              name="dreamCollegeId"
+            >
+              <option value="" <%= !formValues.dreamCollegeId ? 'selected' : '' %>>No dream college / not sure yet</option>
+              <% colleges.forEach(function(college) { %>
+                <option value="<%= college.id %>" <%= formValues.dreamCollegeId === college.id ? 'selected' : '' %>><%= college.name %></option>
+              <% }) %>
+            </select>
+            <% if (errors.dreamCollegeId) { %>
+              <div class="invalid-feedback"><%= errors.dreamCollegeId.msg %></div>
+            <% } %>
+            <p class="form-text mb-0" id="dreamCollegeHint">
+              <% if (colleges.length === 0) { %>College list will be available once official cutoff data is loaded.<% } %>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= Reservations ================= -->
+      <div class="vn-card mb-4">
+        <h2 class="h5 mb-1 d-flex align-items-center gap-2">
+          <span class="vn-icon-badge"><%- icon('shield', { class: 'vn-icon-sm' }) %></span>
+          Reservations
+        </h2>
+        <p class="small mb-3" style="color: var(--vn-ink-muted);">Select any that apply to you.</p>
+
+        <div class="row g-2">
+          <div class="col-6 col-sm-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="isTfws" name="isTfws" <%= formValues.isTfws ? 'checked' : '' %> />
+              <label class="form-check-label" for="isTfws">TFWS</label>
+            </div>
+          </div>
+          <div class="col-6 col-sm-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="isEws" name="isEws" <%= formValues.isEws ? 'checked' : '' %> />
+              <label class="form-check-label" for="isEws">EWS</label>
+            </div>
+          </div>
+          <div class="col-6 col-sm-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="isMinority" name="isMinority" <%= formValues.isMinority ? 'checked' : '' %> />
+              <label class="form-check-label" for="isMinority">Minority</label>
+            </div>
+          </div>
+          <div class="col-6 col-sm-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="isDefence" name="isDefence" <%= formValues.isDefence ? 'checked' : '' %> />
+              <label class="form-check-label" for="isDefence">Defence</label>
+            </div>
+          </div>
+          <div class="col-6 col-sm-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="isPwd" name="isPwd" <%= formValues.isPwd ? 'checked' : '' %> />
+              <label class="form-check-label" for="isPwd">PwD</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-grid">
+        <button type="submit" class="btn btn-vn-primary btn-lg vn-magnetic vn-ripple-container d-inline-flex align-items-center justify-content-center gap-2">
+          Get My Prediction
+          <%- icon('arrow-right', { class: 'vn-icon-sm' }) %>
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<script src="<%= url('/js/predict-form.js') %>"></script>

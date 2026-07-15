@@ -1,0 +1,193 @@
+<div class="vn-admin-topbar">
+  <h1 class="h4 mb-0">Import Cutoff Data</h1>
+</div>
+
+<ul class="nav nav-tabs mb-3">
+  <% allExamTypes.forEach(function (et) { %>
+    <li class="nav-item">
+      <a
+        class="nav-link <%= et.id === examType.id ? 'active' : '' %>"
+        href="<%= url('/admin/import?exam=' + et.code) %>"
+      >
+        <%= et.name %>
+      </a>
+    </li>
+  <% }) %>
+</ul>
+
+<div class="vn-card mb-3">
+  <p class="small mb-3" style="color: var(--vn-ink-muted);">
+    Upload a CAP cutoff JSON file. Safe to re-run — colleges, branches, and cutoff rows are
+    all updated in place rather than duplicated, so uploading the same file twice, or a
+    corrected version of it, is never a problem.
+  </p>
+  <form action="<%= url('/admin/import') %>" method="POST" enctype="multipart/form-data">
+    <div class="mb-3" style="max-width: 300px;">
+      <label for="examTypeCode" class="form-label">This file is for</label>
+      <select class="form-select" id="examTypeCode" name="examTypeCode">
+        <% allExamTypes.forEach(function (et) { %>
+          <option value="<%= et.code %>" <%= et.id === examType.id ? 'selected' : '' %>><%= et.name %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label for="cutoffFile" class="form-label">Cutoff JSON File</label>
+      <input type="file" class="form-control" id="cutoffFile" name="cutoffFile" accept="application/json" required />
+    </div>
+    <button type="submit" class="btn btn-vn-primary">Upload &amp; Import</button>
+  </form>
+</div>
+
+<% if (report) { %>
+  <div class="vn-card">
+    <h2 class="h6 mb-3">Import Report</h2>
+    <div class="row g-3 mb-3">
+      <div class="col-6 col-sm-3">
+        <p class="small mb-0" style="color: var(--vn-ink-muted);">Total Rows</p>
+        <p class="h5 mb-0"><%= report.totalRows %></p>
+      </div>
+      <div class="col-6 col-sm-3">
+        <p class="small mb-0" style="color: var(--vn-ink-muted);">Valid</p>
+        <p class="h5 mb-0" style="color: var(--vn-success);"><%= report.validRowCount %></p>
+      </div>
+      <div class="col-6 col-sm-3">
+        <p class="small mb-0" style="color: var(--vn-ink-muted);">Invalid</p>
+        <p class="h5 mb-0" style="color: <%= report.invalidRowCount > 0 ? 'var(--vn-danger)' : 'var(--vn-ink-muted)' %>;"><%= report.invalidRowCount %></p>
+      </div>
+      <div class="col-6 col-sm-3">
+        <p class="small mb-0" style="color: var(--vn-ink-muted);">Cutoff Rows Written</p>
+        <p class="h5 mb-0"><%= report.cutoffsUpserted %></p>
+      </div>
+    </div>
+    <p class="small mb-3" style="color: var(--vn-ink-muted);">
+      Colleges created/updated: <%= report.collegesUpserted %> &middot;
+      Branches created/updated: <%= report.branchesUpserted %>
+      <% if (report.duplicateRowsCollapsed > 0) { %>
+        &middot; <span style="color: var(--vn-warning);"><%= report.duplicateRowsCollapsed %> duplicate rows collapsed</span>
+      <% } %>
+    </p>
+
+    <% if (report.invalidRowCount > 0) { %>
+      <h3 class="h6 mt-4 mb-2">Invalid Rows</h3>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle mb-0">
+          <thead>
+            <tr>
+              <th style="width: 60px;">Row #</th>
+              <th>Reason</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% report.invalidRows.slice(0, 50).forEach(function (invalid) { %>
+              <tr>
+                <td><%= invalid.index %></td>
+                <td class="small"><%= invalid.errors.join('; ') %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <% if (report.invalidRows.length > 50) { %>
+        <p class="small mt-2 mb-0" style="color: var(--vn-ink-muted);">
+          + <%= report.invalidRows.length - 50 %> more invalid rows not shown here.
+        </p>
+      <% } %>
+    <% } %>
+  </div>
+<% } %>
+
+<div class="vn-card mt-3">
+  <h2 class="h6 mb-1">Import History</h2>
+  <p class="small mb-3" style="color: var(--vn-ink-muted);">
+    Deleting an import removes the cutoff data (percentiles/ranks) it added. Colleges and
+    branches are kept — they're often shared across multiple round files, and may have
+    address/fee/placement details you've entered manually that shouldn't be affected.
+  </p>
+
+  <% if (!history.length) { %>
+    <p class="small mb-0 text-center" style="color: var(--vn-ink-muted);">No imports yet.</p>
+  <% } else { %>
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr>
+            <th>File</th>
+            <th>Imported</th>
+            <th>By</th>
+            <th>Valid / Total</th>
+            <th>Cutoff Rows</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% history.forEach(function (batch) { %>
+            <tr>
+              <td><%= batch.filename %></td>
+              <td class="small"><%= new Date(batch.createdAt).toLocaleString('en-IN') %></td>
+              <td class="small"><%= batch.importedByName || 'CLI' %></td>
+              <td><%= batch.validRowCount %> / <%= batch.totalRows %></td>
+              <td><%= batch.cutoffsUpserted %></td>
+              <td class="text-end">
+                <form
+                  action="<%= url('/admin/import/' + batch.id + '/delete') %>"
+                  method="POST"
+                  onsubmit="return confirm('Delete all cutoff data from &quot;<%= batch.filename %>&quot;? This cannot be undone.');"
+                >
+                  <button type="submit" class="btn btn-sm btn-vn-outline" style="color: var(--vn-danger); border-color: var(--vn-danger);">
+                    Delete
+                  </button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</div>
+
+<div class="vn-card mt-3" style="border: 1px solid var(--vn-danger);">
+  <h2 class="h6 mb-1" style="color: var(--vn-danger);">Danger Zone — Reset All Exam Data</h2>
+  <p class="small mb-3" style="color: var(--vn-ink-muted);">
+    Permanently deletes every college, branch, cutoff row, and import history entry for
+    <strong><%= resetPreview.examTypeName %></strong> — currently
+    <strong><%= resetPreview.collegeCount %> college<%= resetPreview.collegeCount === 1 ? '' : 's' %></strong>
+    and everything under them (branches, cutoffs, placements, fees). Users and their past
+    predictions are <strong>not</strong> affected — a prediction's saved result still displays
+    correctly afterward, since it already stored its own college names and cutoff numbers at
+    the time it was computed.
+  </p>
+  <p class="small mb-3" style="color: var(--vn-danger); font-weight: 600;">
+    This cannot be undone. Only do this if you intend to re-import everything fresh.
+  </p>
+
+  <form
+    id="resetDataForm"
+    action="<%= url('/admin/import/reset-all') %>"
+    method="POST"
+    onsubmit="return confirm('This will permanently delete ALL college and cutoff data for <%= resetPreview.examTypeName %>. Are you absolutely sure?');"
+  >
+    <input type="hidden" name="examTypeCode" value="<%= resetPreview.examType.code %>" />
+    <div class="mb-3" style="max-width: 360px;">
+      <label for="confirmText" class="form-label small">
+        Type <strong><%= resetPreview.requiredConfirmationText %></strong> to confirm:
+      </label>
+      <input type="text" class="form-control" id="confirmText" name="confirmText" autocomplete="off" />
+    </div>
+    <button type="submit" id="resetDataButton" class="btn btn-sm" style="background-color: var(--vn-danger); color: white;" disabled>
+      Delete All <%= resetPreview.examTypeName %> Data
+    </button>
+  </form>
+</div>
+
+<script>
+  (function () {
+    const input = document.getElementById('confirmText');
+    const button = document.getElementById('resetDataButton');
+    const required = <%- JSON.stringify(resetPreview.requiredConfirmationText) %>;
+    if (!input || !button) return;
+    input.addEventListener('input', () => {
+      button.disabled = input.value !== required;
+    });
+  })();
+</script>

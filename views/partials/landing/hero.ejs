@@ -1,0 +1,103 @@
+<section class="vn-section vn-mesh-bg pb-3">
+  <div class="container">
+    <div class="row align-items-center gy-5">
+      <div class="col-12 col-lg-6 vn-animate-slide-up">
+        <span class="vn-badge-pill mb-3">
+          <%- icon('check-circle', { class: 'vn-icon-xs' }) %>
+          Official Maharashtra CAP Predictor
+        </span>
+        <h1 class="vn-hero-title mb-3">
+          Predict Your College Admission with Official CAP Cutoff Data
+        </h1>
+        <p class="fs-5 mb-4" style="color: var(--vn-ink-muted); max-width: 48ch;">
+          Choose your entrance exam, enter your percentile, and receive personalized
+          admission predictions using official CAP cutoff data.
+        </p>
+
+        <div class="d-flex flex-wrap gap-3 mb-4">
+          <% if (typeof latestPrediction !== 'undefined' && latestPrediction) { %>
+            <a href="<%= url('/predict/' + latestPrediction.id + '/result') %>" class="btn btn-vn-primary btn-lg vn-magnetic vn-ripple-container d-inline-flex align-items-center gap-2">
+              View My Prediction
+              <%- icon('arrow-right', { class: 'vn-icon-sm' }) %>
+            </a>
+            <a href="<%= url('/predict?new=true') %>" class="btn btn-vn-outline btn-lg vn-magnetic d-inline-flex align-items-center gap-2">
+              <%- icon('sparkles', { class: 'vn-icon-sm' }) %>
+              New Prediction
+            </a>
+          <% } else { %>
+            <a href="<%= url('/predict') %>" class="btn btn-vn-primary btn-lg vn-magnetic vn-ripple-container d-inline-flex align-items-center gap-2">
+              Start Prediction
+              <%- icon('arrow-right', { class: 'vn-icon-sm' }) %>
+            </a>
+            <a href="#how-it-works" class="btn btn-vn-outline btn-lg vn-magnetic">How It Works</a>
+          <% } %>
+        </div>
+
+        <div class="d-flex flex-wrap gap-4">
+          <span class="vn-trust-item"><%- icon('check', { class: 'vn-icon-sm' }) %> Official CAP Data</span>
+          <span class="vn-trust-item"><%- icon('check', { class: 'vn-icon-sm' }) %> Thousands of Students</span>
+          <span class="vn-trust-item"><%- icon('check', { class: 'vn-icon-sm' }) %> PDF Reports</span>
+          <span class="vn-trust-item"><%- icon('check', { class: 'vn-icon-sm' }) %> Mobile Friendly</span>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-6">
+        <div class="position-relative">
+          <div class="vn-hero-mockup vn-float vn-animate-scale-in" data-step-cycle data-step-interval="1500" data-step-end-pause="2400">
+            <div class="vn-mockup-header">
+              <span class="vn-mockup-dot"></span>
+              <span class="vn-mockup-dot"></span>
+              <span class="vn-mockup-dot"></span>
+              <span class="vn-mockup-title">MCA | MBA Predictor</span>
+            </div>
+            <div class="vn-mockup-body">
+              <div class="vn-step-row">
+                <span class="vn-step-icon">1</span>
+                <span class="vn-step-label">Select Exam</span>
+                <span class="vn-step-chip vn-step-chip-selected">MCA CET</span>
+                <span class="vn-step-chip">MBA CET</span>
+              </div>
+              <div class="vn-step-row">
+                <span class="vn-step-icon">2</span>
+                <span class="vn-step-label">Percentile</span>
+                <span class="vn-step-chip">95.42</span>
+              </div>
+              <div class="vn-step-row">
+                <span class="vn-step-icon">3</span>
+                <span class="vn-step-label">Analyzing CAP cutoff data&hellip;</span>
+              </div>
+              <div class="vn-step-row">
+                <span class="vn-step-icon">4</span>
+                <span class="vn-step-label">Finding your colleges&hellip;</span>
+              </div>
+              <div class="vn-step-row">
+                <span class="vn-step-icon">5</span>
+                <span class="vn-step-label">Dream College</span>
+                <span class="vn-step-chip">Found</span>
+              </div>
+              <div class="vn-step-row">
+                <span class="vn-step-icon">6</span>
+                <span class="vn-step-label">Chance</span>
+                <span class="vn-step-chip vn-step-chip-success">Very High</span>
+              </div>
+              <div class="vn-step-row">
+                <span class="vn-step-icon">7</span>
+                <span class="vn-step-label">PDF Report Ready</span>
+                <%- icon('file-text', { class: 'vn-icon-sm' }) %>
+              </div>
+            </div>
+          </div>
+
+          <div class="vn-floating-chip vn-float vn-float-delay-1" style="top: -18px; right: 8%;">
+            <%- icon('award', { class: 'vn-icon-sm' }) %>
+            Very High Chance
+          </div>
+          <div class="vn-floating-chip vn-float vn-float-delay-2" style="bottom: -16px; left: 4%;">
+            <%- icon('smartphone', { class: 'vn-icon-sm' }) %>
+            Built for Mobile
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,76 @@
+<div class="vn-admin-topbar">
+  <h1 class="h4 mb-0"><%= mode === 'create' ? 'Add Exam Type' : 'Edit Exam Type' %></h1>
+  <a href="<%= url('/admin/exam-types') %>" class="btn btn-sm btn-vn-outline">&larr; Back to Exam Types</a>
+</div>
+
+<form action="<%= mode === 'create' ? url('/admin/exam-types') : url('/admin/exam-types/' + examType.id) %>" method="POST">
+  <div class="vn-card">
+    <div class="row g-3">
+      <div class="col-12 col-sm-6">
+        <label for="code" class="form-label">
+          Exam Code
+          <% if (mode === 'edit') { %><span class="text-muted small">(cannot be changed)</span><% } %>
+        </label>
+        <input
+          type="text"
+          class="form-control"
+          id="code"
+          name="code"
+          value="<%= examType.code || '' %>"
+          placeholder="e.g. ENGG_CET"
+          <%= mode === 'edit' ? 'readonly disabled' : 'required' %>
+        />
+        <% if (mode === 'create') { %>
+          <div class="form-text">Uppercase letters/numbers/underscores only — used internally, not shown to students.</div>
+        <% } %>
+      </div>
+
+      <div class="col-12 col-sm-6">
+        <label for="name" class="form-label">Display Name</label>
+        <input
+          type="text"
+          class="form-control"
+          id="name"
+          name="name"
+          value="<%= examType.name || '' %>"
+          placeholder="e.g. Engineering CET"
+          required
+        />
+      </div>
+
+      <div class="col-12 col-sm-6">
+        <label for="capRounds" class="form-label">Number of CAP Rounds</label>
+        <input
+          type="number"
+          class="form-control"
+          id="capRounds"
+          name="capRounds"
+          min="1"
+          max="10"
+          value="<%= examType.cap_rounds || 4 %>"
+          required
+        />
+        <div class="form-text">Result page tabs, PDF sections, and college cutoff tables all follow this automatically.</div>
+      </div>
+
+      <div class="col-12 col-sm-6 d-flex align-items-end">
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="isActive"
+            name="isActive"
+            <%= (mode === 'create' || examType.is_active) ? 'checked' : '' %>
+          />
+          <label class="form-check-label" for="isActive">
+            Active (selectable on the prediction form and in admin screens)
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-vn-primary mt-3">
+    <%= mode === 'create' ? 'Add Exam Type' : 'Save Changes' %>
+  </button>
+</form>

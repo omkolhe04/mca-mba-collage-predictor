@@ -1,0 +1,50 @@
+<div class="vn-section" style="min-height: 100vh; display: flex; align-items: center; background-color: var(--vn-blue-50);">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-sm-8 col-md-5 col-lg-4">
+        <div class="vn-card">
+          <div class="text-center mb-4">
+            <div class="d-flex justify-content-center mb-2">
+              <%- include('../partials/brand-lockup', { variant: 'footer' }) %>
+            </div>
+            <p class="small mb-0" style="color: var(--vn-ink-muted);">Admin Panel</p>
+          </div>
+
+          <% if (errors._general) { %>
+            <div class="alert alert-danger py-2 small" role="alert"><%= errors._general.msg %></div>
+          <% } %>
+
+          <form action="<%= url('/admin/login') %>" method="POST" novalidate>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control <%= errors.email ? 'is-invalid' : '' %>"
+                id="email"
+                name="email"
+                value="<%= formValues.email || '' %>"
+                required
+                autofocus
+              />
+              <% if (errors.email) { %><div class="invalid-feedback"><%= errors.email.msg %></div><% } %>
+            </div>
+            <div class="mb-4">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-control <%= errors.password ? 'is-invalid' : '' %>"
+                id="password"
+                name="password"
+                required
+              />
+              <% if (errors.password) { %><div class="invalid-feedback"><%= errors.password.msg %></div><% } %>
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-vn-primary">Log In</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

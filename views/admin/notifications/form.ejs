@@ -1,0 +1,54 @@
+<%
+  // datetime-local inputs need "YYYY-MM-DDTHH:mm" — trims an ISO
+  // timestamp from the DB down to that shape, or returns '' if unset.
+  function toLocalInputValue(isoString) {
+    if (!isoString) return '';
+    return new Date(isoString).toISOString().slice(0, 16);
+  }
+%>
+
+<div class="vn-admin-topbar">
+  <h1 class="h4 mb-0"><%= mode === 'create' ? 'Add Notification' : 'Edit Notification' %></h1>
+  <a href="<%= url('/admin/notifications') %>" class="btn btn-sm btn-vn-outline">&larr; Back to Notifications</a>
+</div>
+
+<form action="<%= url(mode === 'create' ? '/admin/notifications' : '/admin/notifications/' + notification.id) %>" method="POST">
+  <div class="vn-card">
+    <div class="row g-3">
+      <div class="col-12">
+        <label for="title" class="form-label">Title</label>
+        <input type="text" class="form-control" id="title" name="title" value="<%= notification.title || '' %>" required />
+      </div>
+      <div class="col-12">
+        <label for="message" class="form-label">Message</label>
+        <textarea class="form-control" id="message" name="message" rows="3" required><%= notification.message || '' %></textarea>
+      </div>
+      <div class="col-12 col-sm-4">
+        <label for="type" class="form-label">Type</label>
+        <select class="form-select" id="type" name="type">
+          <% ['info', 'success', 'warning', 'urgent'].forEach(function (t) { %>
+            <option value="<%= t %>" <%= notification.type === t ? 'selected' : '' %>><%= t.charAt(0).toUpperCase() + t.slice(1) %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="col-12 col-sm-4">
+        <label for="startsAt" class="form-label">Starts At <span class="text-muted small">(optional)</span></label>
+        <input type="datetime-local" class="form-control" id="startsAt" name="startsAt" value="<%= toLocalInputValue(notification.starts_at) %>" />
+      </div>
+      <div class="col-12 col-sm-4">
+        <label for="endsAt" class="form-label">Ends At <span class="text-muted small">(optional)</span></label>
+        <input type="datetime-local" class="form-control" id="endsAt" name="endsAt" value="<%= toLocalInputValue(notification.ends_at) %>" />
+      </div>
+      <div class="col-12">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="isActive" name="isActive" <%= (mode === 'create' || notification.is_active) ? 'checked' : '' %> />
+          <label class="form-check-label" for="isActive">Active</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-vn-primary mt-3">
+    <%= mode === 'create' ? 'Add Notification' : 'Save Changes' %>
+  </button>
+</form>
