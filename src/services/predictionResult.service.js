@@ -7,6 +7,7 @@ const feeRepository = require('../repositories/fee.repository');
 const { generateRoundCodes } = require('../utils/constants');
 const { shouldShowInVeryHigh } = require('../config/veryHighDisplayThresholds');
 const { shouldShowInLow } = require('../config/lowDisplayMargin');
+const { getAspirationalCountForExam } = require('../config/preferenceOrderConfig');
 
 const CHANCE_BUCKET_KEYS = ['veryHigh', 'high', 'moderate', 'low'];
 
@@ -123,6 +124,73 @@ function applyDisplayFilterAndSort(snapshot, studentPercentile) {
 }
 
 /**
+ * Builds the "Recommended Preference Order" using an actual CAP
+ * counselling strategy, instead of the engine's own generic
+ * ordering — a DISPLAY-layer concern only. Does not touch the
+ * engine, chance classification, or anything stored in the
+ * prediction's result_snapshot; this is computed fresh every
+ * time a result is viewed, from Round 1's already-filtered,
+ * already-sorted bucket data (see applyDisplayFilterAndSort
+ * above, which must run first).
+ *
+ * Structure, exactly as specified:
+ *   1. Aspirational — the N colleges (configurable, see
+ *      src/config/preferenceOrderConfig.js) with the highest
+ *      cutoffs overall, regardless of chance band. Already
+ *      scoped to the student's Admission University, since the
+ *      engine's own candidate pool is already filtered to that
+ *      university (see predictionEngine.service.js).
+ *   2. Moderate Chance — every remaining Moderate college.
+ *   3. High Chance — every remaining High college.
+ *   4. Very High Chance — every remaining Very High college.
+ * Each section sorted by cutoff descending. Low Chance colleges
+ * are deliberately excluded from the list entirely, unless one
+ * happens to be an Aspirational pick — a smart CAP preference
+ * list prioritizes realistic safety nets over many low-odds
+ * options, matching how an experienced counsellor would build one.
+ *
+ * No college appears twice: once picked for Aspirational, it's
+ * removed from wherever it would have otherwise landed.
+ */
+function buildStrategicPreferenceOrder(snapshot, examTypeCode) {
+  const roundCodes = snapshot.roundCodes || generateRoundCodes(4);
+  const firstRound = snapshot.rounds[roundCodes[0]];
+  if (!firstRound) {
+    return [];
+  }
+
+  // Combine every chance bucket into one list, each entry tagged
+  // with which bucket it truly belongs to (its real chance) —
+  // needed both to route it into the right section below, and so
+  // the view can still show a college's genuine chance even when
+  // it's promoted into the Aspirational section.
+  const combined = [];
+  for (const bucketKey of CHANCE_BUCKET_KEYS) {
+    for (const entry of firstRound[bucketKey] || []) {
+      combined.push({ ...entry, originalBucket: bucketKey });
+    }
+  }
+
+  const aspirationalCount = getAspirationalCountForExam(examTypeCode);
+  const sortedByCutoffDesc = [...combined].sort((a, b) => b.cutoffPercentile - a.cutoffPercentile);
+  const aspirational = sortedByCutoffDesc.slice(0, aspirationalCount);
+  const aspirationalIds = new Set(aspirational.map((entry) => entry.collegeId));
+
+  const remaining = combined.filter((entry) => !aspirationalIds.has(entry.collegeId));
+  const sectionEntries = (bucketKey) =>
+    remaining.filter((entry) => entry.originalBucket === bucketKey).sort((a, b) => b.cutoffPercentile - a.cutoffPercentile);
+
+  const ordered = [
+    ...aspirational.map((entry) => ({ ...entry, section: 'aspirational' })),
+    ...sectionEntries('moderate').map((entry) => ({ ...entry, section: 'moderate' })),
+    ...sectionEntries('high').map((entry) => ({ ...entry, section: 'high' })),
+    ...sectionEntries('veryHigh').map((entry) => ({ ...entry, section: 'veryHigh' })),
+  ];
+
+  return ordered.map((entry, index) => ({ ...entry, rank: index + 1 }));
+}
+
+/**
  * Assembles everything the Result Page view needs: the
  * prediction, its engine snapshot, and a Map of collegeId ->
  * enrichment data (NAAC, autonomy, hostel, fee, placement).
@@ -142,6 +210,13 @@ async function buildResultView(predictionId) {
   }
 
   const snapshot = applyDisplayFilterAndSort(rawSnapshot, Number(prediction.percentile));
+
+  // Replaces the engine's own recommendedPreferenceOrder with the
+  // new counselling-strategy structure, computed fresh for
+  // display — the engine's actual stored result_snapshot in the
+  // database is never touched, only this in-memory copy used for
+  // rendering this one request.
+  snapshot.recommendedPreferenceOrder = buildStrategicPreferenceOrder(snapshot, snapshot.examTypeCode);
 
   const collegeIds = collectCollegeIds(snapshot);
 

@@ -4,10 +4,11 @@
 
 <div class="vn-card">
   <p class="small mb-3" style="color: var(--vn-ink-muted);">
-    Set a WhatsApp group invite link per university. Whichever university a student picks as
-    their <strong>Admission University</strong>, that university's link (if set) shows as a
-    "Join Admission Support Group" button on their result page. Leave blank for any university
-    without a group yet — no button shows for it until you add one.
+    Set a WhatsApp group invite link per university <strong>and per exam</strong> — a university
+    can have a separate group for MCA CET students and MBA CET students. Whichever university and
+    exam a student's prediction used, that specific combination's link (if set) shows as a
+    "Join Admission Support Group" button on their result page. Leave a cell blank to hide the
+    button for that combination until you add a link.
   </p>
 
   <div class="table-responsive">
@@ -15,26 +16,27 @@
       <thead>
         <tr>
           <th>University</th>
-          <th>Short Name</th>
-          <th>WhatsApp Group</th>
-          <th></th>
+          <% (universities[0] ? universities[0].exams : []).forEach(function (exam) { %>
+            <th><%= exam.examTypeName %></th>
+          <% }) %>
         </tr>
       </thead>
       <tbody>
         <% universities.forEach(function (uni) { %>
           <tr>
-            <td><%= uni.name %></td>
-            <td><%= uni.short_name || '—' %></td>
-            <td>
-              <% if (uni.whatsapp_group_link) { %>
-                <span class="vn-badge vn-badge-success">Set</span>
-              <% } else { %>
-                <span class="vn-badge vn-badge-danger">Not set</span>
-              <% } %>
-            </td>
-            <td class="text-end">
-              <a href="<%= url('/admin/universities/' + uni.id + '/edit') %>" class="btn btn-sm btn-vn-outline">Edit</a>
-            </td>
+            <td><%= uni.name %><% if (uni.short_name) { %> <span class="small" style="color: var(--vn-ink-muted);">(<%= uni.short_name %>)</span><% } %></td>
+            <% uni.exams.forEach(function (exam) { %>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <% if (exam.whatsappGroupLink) { %>
+                    <span class="vn-badge vn-badge-success">Set</span>
+                  <% } else { %>
+                    <span class="vn-badge vn-badge-danger">Not set</span>
+                  <% } %>
+                  <a href="<%= url('/admin/universities/' + uni.id + '/whatsapp/' + exam.examTypeId + '/edit') %>" class="btn btn-sm btn-vn-outline">Edit</a>
+                </div>
+              </td>
+            <% }) %>
           </tr>
         <% }) %>
       </tbody>

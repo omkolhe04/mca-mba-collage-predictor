@@ -4,22 +4,36 @@
       Not enough data yet to recommend a preference order.
     </p>
   <% } else { %>
+    <%
+      const SECTION_META = {
+        aspirational: { label: 'Aspirational Colleges', desc: 'Reach for these first — your top picks by cutoff.' },
+        moderate: { label: 'Moderate Chance', desc: 'A strong, realistic core for your list.' },
+        high: { label: 'High Chance', desc: 'Solid, safer options.' },
+        veryHigh: { label: 'Very High Chance', desc: 'Your safety net.' },
+      };
+      const sectionOrder = ['aspirational', 'moderate', 'high', 'veryHigh'];
+      let lastSection = null;
+    %>
     <% recommendedPreferenceOrder.forEach(function (item) { %>
+      <% if (item.section !== lastSection) { %>
+        <% lastSection = item.section; %>
+        <% const meta = SECTION_META[item.section]; %>
+        <div class="<%= sectionOrder.indexOf(item.section) > 0 ? 'mt-4' : '' %> mb-2">
+          <h3 class="h6 mb-0"><%= meta.label %></h3>
+          <p class="small mb-0" style="color: var(--vn-ink-muted);"><%= meta.desc %></p>
+        </div>
+      <% } %>
       <div class="vn-preference-row">
         <span class="vn-preference-rank"><%= item.rank %></span>
         <div class="flex-grow-1">
           <p class="mb-0 fw-semibold"><%= item.collegeName %></p>
-          <% if (item.basis === 'dream_college') { %>
-            <span class="vn-badge vn-badge-success">Dream College</span>
-          <% } else { %>
-            <span class="small" style="color: var(--vn-ink-muted);">Best available chance</span>
-          <% } %>
+          <span class="small" style="color: var(--vn-ink-muted);">Previous Cutoff: <%= item.cutoffPercentile %></span>
         </div>
         <div class="text-end flex-shrink-0">
-          <p class="small mb-1" style="color: var(--vn-ink-muted);">Round 1 Chance</p>
-          <% if (item.round1Chance) { %>
-            <% const meta = CHANCE_BUCKET_META[item.round1Chance]; %>
-            <span class="vn-badge <%= meta.badgeClass %>"><%= meta.label %></span>
+          <p class="small mb-1" style="color: var(--vn-ink-muted);">Actual Chance</p>
+          <% const chanceMeta = CHANCE_BUCKET_META[item.originalBucket]; %>
+          <% if (chanceMeta) { %>
+            <span class="vn-badge <%= chanceMeta.badgeClass %>"><%= chanceMeta.label %></span>
           <% } else { %>
             <span class="small" style="color: var(--vn-ink-muted);">&mdash;</span>
           <% } %>

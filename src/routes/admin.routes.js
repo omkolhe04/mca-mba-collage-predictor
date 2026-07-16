@@ -121,7 +121,7 @@ router.get('/sliders/:id/edit', asyncHandler(adminSliderController.showEditForm)
 router.post('/sliders/:id', uploadImage.single('image'), asyncHandler(adminSliderController.update));
 
 router.get('/universities', asyncHandler(adminUniversityController.list));
-router.get('/universities/:id/edit', asyncHandler(adminUniversityController.showEditForm));
-router.post('/universities/:id', asyncHandler(adminUniversityController.update));
+router.get('/universities/:universityId/whatsapp/:examTypeId/edit', asyncHandler(adminUniversityController.showEditForm));
+router.post('/universities/:universityId/whatsapp/:examTypeId', asyncHandler(adminUniversityController.update));
 
 module.exports = router;

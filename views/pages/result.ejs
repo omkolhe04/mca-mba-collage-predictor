@@ -57,7 +57,7 @@
               class="vn-stat-card-premium d-flex flex-column align-items-center justify-content-center h-100 text-decoration-none"
             >
               <span class="vn-stat-icon-wrap" style="background-color: transparent;">
-                <%- whatsappIcon({ class: 'vn-icon-lg' }) %>
+                <%- whatsappIcon({ class: 'vn-icon-xl' }) %>
               </span>
               <p class="mb-0 fw-semibold small text-center" style="color: var(--vn-ink);">
                 Join <%= admissionUniversity.short_name || admissionUniversity.name %> Admission Support Group
@@ -134,6 +134,16 @@
         <p class="vn-eyebrow mb-2">Use This For Your CAP Option Form</p>
         <h2 class="h4 mb-0">Recommended Preference Order</h2>
       </div>
+
+      <div class="vn-info-note mb-4">
+        <%- icon('info', { class: 'vn-icon-sm' }) %>
+        <span>
+          💡 <strong>CAP Tip:</strong> If you're allotted any of your Top 5 preferred colleges in
+          a CAP round, the allotment is automatically frozen as per Maharashtra CAP rules. Review
+          your preference order carefully before final submission.
+        </span>
+      </div>
+
       <%- include('../partials/result/preference-order', {
         recommendedPreferenceOrder: snapshot.recommendedPreferenceOrder,
         CHANCE_BUCKET_META
@@ -142,63 +152,77 @@
   </section>
 
   <!-- ================= PDF download ================= -->
+  <%
+    // Feature flag: PDF export is temporarily hidden from the
+    // UI per product decision — NOT removed. The route, the PDF
+    // generation service, and everything backend-related are
+    // fully intact and untouched; to bring the button back,
+    // just change this to true.
+    const showPdfExportButton = false;
+  %>
   <section class="vn-section">
     <div class="container text-center">
       <div class="d-flex flex-wrap justify-content-center gap-3">
-        <a
-          href="<%= url('/predict/' + prediction.id + '/pdf') %>"
-          id="pdfDownloadBtn"
-          class="btn btn-vn-primary btn-lg vn-magnetic vn-ripple-container d-inline-flex align-items-center gap-2"
-        >
-          <span id="pdfDownloadLabel">Download PDF Report</span>
-          <%- icon('download', { class: 'vn-icon-sm' }) %>
-        </a>
+        <% if (showPdfExportButton) { %>
+          <a
+            href="<%= url('/predict/' + prediction.id + '/pdf') %>"
+            id="pdfDownloadBtn"
+            class="btn btn-vn-primary btn-lg vn-magnetic vn-ripple-container d-inline-flex align-items-center gap-2"
+          >
+            <span id="pdfDownloadLabel">Download PDF Report</span>
+            <%- icon('download', { class: 'vn-icon-sm' }) %>
+          </a>
+        <% } %>
         <a
           href="<%= url('/predict?new=true') %>"
-          class="btn btn-vn-outline btn-lg vn-magnetic d-inline-flex align-items-center gap-2"
+          class="btn <%= showPdfExportButton ? 'btn-vn-outline' : 'btn-vn-primary' %> btn-lg vn-magnetic d-inline-flex align-items-center gap-2"
         >
           <%- icon('sparkles', { class: 'vn-icon-sm' }) %>
           New Prediction
         </a>
       </div>
-      <p class="small mt-2 mb-0" style="color: var(--vn-ink-muted);">
-        A printable copy of this result, including your CAP preference order.
-      </p>
+      <% if (showPdfExportButton) { %>
+        <p class="small mt-2 mb-0" style="color: var(--vn-ink-muted);">
+          A printable copy of this result, including your CAP preference order.
+        </p>
+      <% } %>
     </div>
   </section>
 
-  <script>
-    // Optimistic loading-state text on the PDF button. The
-    // actual download is a normal browser file download (no
-    // fetch/XHR involved, so there's no real progress event to
-    // hook into) — this just cycles reassuring status text for
-    // a few seconds after the click, then reverts, independent
-    // of when the browser actually finishes saving the file.
-    (function () {
-      const btn = document.getElementById('pdfDownloadBtn');
-      const label = document.getElementById('pdfDownloadLabel');
-      if (!btn || !label) return;
+  <% if (showPdfExportButton) { %>
+    <script>
+      // Optimistic loading-state text on the PDF button. The
+      // actual download is a normal browser file download (no
+      // fetch/XHR involved, so there's no real progress event to
+      // hook into) — this just cycles reassuring status text for
+      // a few seconds after the click, then reverts, independent
+      // of when the browser actually finishes saving the file.
+      (function () {
+        const btn = document.getElementById('pdfDownloadBtn');
+        const label = document.getElementById('pdfDownloadLabel');
+        if (!btn || !label) return;
 
-      const messages = ['Preparing Report…', 'Generating PDF…', 'Almost Ready…'];
-      let cancelled = false;
+        const messages = ['Preparing Report…', 'Generating PDF…', 'Almost Ready…'];
+        let cancelled = false;
 
-      btn.addEventListener('click', () => {
-        cancelled = false;
-        let i = 0;
-        label.textContent = messages[0];
-        const interval = setInterval(() => {
-          i += 1;
-          if (cancelled || i >= messages.length) {
-            clearInterval(interval);
-            setTimeout(() => {
-              if (!cancelled) label.textContent = 'Download PDF Report';
-            }, 900);
-            return;
-          }
-          label.textContent = messages[i];
-        }, 900);
-      });
-    })();
-  </script>
+        btn.addEventListener('click', () => {
+          cancelled = false;
+          let i = 0;
+          label.textContent = messages[0];
+          const interval = setInterval(() => {
+            i += 1;
+            if (cancelled || i >= messages.length) {
+              clearInterval(interval);
+              setTimeout(() => {
+                if (!cancelled) label.textContent = 'Download PDF Report';
+              }, 900);
+              return;
+            }
+            label.textContent = messages[i];
+          }, 900);
+        });
+      })();
+    </script>
+  <% } %>
 
 <% } %>

@@ -8,6 +8,7 @@ const userService = require('../services/user.service');
 const examTypeRepository = require('../repositories/examType.repository');
 const collegeRepository = require('../repositories/college.repository');
 const universityRepository = require('../repositories/university.repository');
+const universityExamWhatsappGroupRepository = require('../repositories/universityExamWhatsappGroup.repository');
 const { setUserSessionCookie } = require('../utils/userSession');
 const { generateRoundCodes, CHANCE_BUCKET_META } = require('../utils/constants');
 const { url } = require('../utils/url');
@@ -165,14 +166,26 @@ async function showResult(req, res) {
   const examType = await examTypeRepository.findById(resultView.prediction.exam_type_id);
   const examName = examType ? examType.name : 'MCA CET';
 
-  // Admission University's WhatsApp group, if the admin has set
-  // one — scoped to whichever university this specific student
-  // chose. Left entirely null/absent if not set; the view falls
-  // back gracefully (shows Eligible Categories instead) rather
-  // than a broken/empty button.
-  const admissionUniversity = resultView.prediction.admission_university_id
-    ? await universityRepository.findById(resultView.prediction.admission_university_id)
-    : null;
+  // Admission University's WhatsApp group for THIS SPECIFIC exam,
+  // if the admin has set one — a university can have a separate
+  // group per exam (its own MCA CET group vs MBA CET group), so
+  // the lookup is scoped to both, not university alone. Left
+  // entirely null/absent if not set; the view falls back
+  // gracefully (shows Eligible Categories instead) rather than a
+  // broken/empty button.
+  let admissionUniversity = null;
+  if (resultView.prediction.admission_university_id) {
+    const [university, whatsappGroup] = await Promise.all([
+      universityRepository.findById(resultView.prediction.admission_university_id),
+      universityExamWhatsappGroupRepository.findByUniversityAndExam(
+        resultView.prediction.admission_university_id,
+        resultView.prediction.exam_type_id
+      ),
+    ]);
+    if (university) {
+      admissionUniversity = { ...university, whatsapp_group_link: whatsappGroup ? whatsappGroup.whatsapp_group_link : null };
+    }
+  }
 
   res.render('pages/result', {
     title: 'Your Prediction Result',
