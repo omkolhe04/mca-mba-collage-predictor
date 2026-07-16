@@ -1,54 +1,136 @@
+<%
+  // Builds a query string preserving every current filter, with
+  // one or more values overridden - used throughout for
+  // pagination, sort, and page-size links so switching one thing
+  // never resets the others.
+  function buildQuery(overrides) {
+    const params = {
+      search: filters.search,
+      examTypeId: filters.examTypeId,
+      universityId: filters.admissionUniversityId,
+      categoryId: filters.categoryId,
+      gender: filters.gender,
+      dateFrom: filters.dateFrom,
+      dateTo: filters.dateTo,
+      sort: filters.sort,
+      page,
+      pageSize,
+      ...overrides,
+    };
+    const qs = Object.entries(params)
+      .filter(([, v]) => v !== '' && v !== null && v !== undefined)
+      .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+      .join('&');
+    return url('/admin/users') + (qs ? '?' + qs : '');
+  }
+%>
 <div class="vn-admin-topbar">
   <h1 class="h4 mb-0">Manage Users</h1>
+  <a href="<%= buildQuery({}).replace('/admin/users', '/admin/users/export.csv') %>" class="btn btn-sm btn-vn-outline d-inline-flex align-items-center gap-2">
+    <%- icon('download', { class: 'vn-icon-xs' }) %>
+    Export CSV
+  </a>
 </div>
 
+<!-- ================= Filter bar ================= -->
 <div class="vn-card mb-3">
-  <form action="<%= url('/admin/users') %>" method="GET" class="d-flex gap-2">
-    <input
-      type="text"
-      name="search"
-      class="form-control"
-      placeholder="Search by name, mobile, or email..."
-      value="<%= search %>"
-    />
-    <button type="submit" class="btn btn-vn-outline">Search</button>
+  <form id="userFiltersForm" action="<%= url('/admin/users') %>" method="GET" class="row g-2">
+    <div class="col-12 col-md-3">
+      <input type="text" name="search" class="form-control" placeholder="Name / Mobile / Email" value="<%= filters.search %>" />
+    </div>
+    <div class="col-6 col-md-2">
+      <select name="examTypeId" class="form-select">
+        <option value="">All Exams</option>
+        <% examTypes.forEach(function (et) { %>
+          <option value="<%= et.id %>" <%= filters.examTypeId === et.id ? 'selected' : '' %>><%= et.name %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="col-6 col-md-2">
+      <select name="universityId" class="form-select">
+        <option value="">All Universities</option>
+        <% universities.forEach(function (uni) { %>
+          <option value="<%= uni.id %>" <%= filters.admissionUniversityId === uni.id ? 'selected' : '' %>><%= uni.short_name || uni.name %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="col-6 col-md-2">
+      <select name="categoryId" class="form-select">
+        <option value="">All Categories</option>
+        <% categories.forEach(function (cat) { %>
+          <option value="<%= cat.id %>" <%= filters.categoryId === cat.id ? 'selected' : '' %>><%= cat.name %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div class="col-6 col-md-2">
+      <select name="gender" class="form-select">
+        <option value="">All Genders</option>
+        <option value="Male" <%= filters.gender === 'Male' ? 'selected' : '' %>>Male</option>
+        <option value="Female" <%= filters.gender === 'Female' ? 'selected' : '' %>>Female</option>
+        <option value="Other" <%= filters.gender === 'Other' ? 'selected' : '' %>>Other</option>
+      </select>
+    </div>
+    <div class="col-6 col-md-1">
+      <button type="submit" class="btn btn-vn-primary w-100">Filter</button>
+    </div>
+
+    <div class="col-6 col-md-2">
+      <label class="form-text mb-1">Prediction Date From</label>
+      <input type="date" name="dateFrom" class="form-control" value="<%= filters.dateFrom %>" />
+    </div>
+    <div class="col-6 col-md-2">
+      <label class="form-text mb-1">To</label>
+      <input type="date" name="dateTo" class="form-control" value="<%= filters.dateTo %>" />
+    </div>
+    <div class="col-6 col-md-3">
+      <label class="form-text mb-1">Sort</label>
+      <select name="sort" class="form-select">
+        <option value="newest" <%= filters.sort === 'newest' ? 'selected' : '' %>>Newest First</option>
+        <option value="oldest" <%= filters.sort === 'oldest' ? 'selected' : '' %>>Oldest First</option>
+        <option value="percentile_desc" <%= filters.sort === 'percentile_desc' ? 'selected' : '' %>>Highest Percentile</option>
+        <option value="percentile_asc" <%= filters.sort === 'percentile_asc' ? 'selected' : '' %>>Lowest Percentile</option>
+        <option value="name_asc" <%= filters.sort === 'name_asc' ? 'selected' : '' %>>Name A-Z</option>
+        <option value="name_desc" <%= filters.sort === 'name_desc' ? 'selected' : '' %>>Name Z-A</option>
+      </select>
+    </div>
+    <div class="col-6 col-md-2 d-flex align-items-end">
+      <a href="<%= url('/admin/users') %>" class="btn btn-vn-outline w-100">Reset Filters</a>
+    </div>
   </form>
 </div>
 
 <div class="vn-card">
   <% if (!users.length) { %>
     <p class="small mb-0 text-center" style="color: var(--vn-ink-muted);">
-      <%= search ? 'No users match your search.' : 'No users yet — users are created automatically when someone submits the prediction form.' %>
+      No users match these filters.
     </p>
   <% } else { %>
     <div class="table-responsive">
-      <table class="table align-middle mb-0">
+      <table class="table align-middle mb-0 vn-sticky-header-table">
         <thead>
           <tr>
             <th>Name</th>
             <th>Mobile</th>
             <th>Email</th>
-            <th>Status</th>
-            <th>Joined</th>
+            <th>Entrance Exam</th>
+            <th>Admission University</th>
+            <th>Prediction Date</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          <% users.forEach(function (user) { %>
+          <% users.forEach(function (u) { %>
             <tr>
-              <td><%= user.name %></td>
-              <td><%= user.mobile %></td>
-              <td><%= user.email || '—' %></td>
-              <td>
-                <% if (user.is_active) { %>
-                  <span class="vn-badge vn-badge-success">Active</span>
-                <% } else { %>
-                  <span class="vn-badge vn-badge-danger">Inactive</span>
-                <% } %>
-              </td>
-              <td><%= new Date(user.created_at).toLocaleDateString('en-IN') %></td>
+              <td><%= u.name %></td>
+              <td><%= u.mobile %></td>
+              <td><%= u.email || '—' %></td>
+              <td><%= u.examTypeName %></td>
+              <td><%= u.admissionUniversityName %></td>
+              <td><%= new Date(u.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) %></td>
               <td class="text-end">
-                <a href="<%= url('/admin/users/' + user.id) %>" class="btn btn-sm btn-vn-outline">View</a>
+                <button type="button" class="btn btn-sm btn-vn-outline vn-view-detail-btn" data-detail-url="<%= url('/admin/users/predictions/' + u.predictionId + '/detail') %>">
+                  View
+                </button>
               </td>
             </tr>
           <% }) %>
@@ -56,12 +138,22 @@
       </table>
     </div>
 
+    <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <span class="small" style="color: var(--vn-ink-muted);">Rows per page:</span>
+        <% [25, 50, 100].forEach(function (size) { %>
+          <a href="<%= buildQuery({ pageSize: size, page: 1 }) %>" class="btn btn-sm <%= pageSize === size ? 'btn-vn-primary' : 'btn-vn-outline' %>"><%= size %></a>
+        <% }) %>
+      </div>
+      <span class="small" style="color: var(--vn-ink-muted);"><%= total %> total</span>
+    </div>
+
     <% if (totalPages > 1) { %>
-      <nav class="mt-3">
+      <nav class="mt-2">
         <ul class="pagination pagination-sm justify-content-center mb-0">
           <% for (let p = 1; p <= totalPages; p++) { %>
             <li class="page-item <%= p === page ? 'active' : '' %>">
-              <a class="page-link" href="<%= url('/admin/users?page=' + p + (search ? '&search=' + encodeURIComponent(search) : '')) %>"><%= p %></a>
+              <a class="page-link" href="<%= buildQuery({ page: p }) %>"><%= p %></a>
             </li>
           <% } %>
         </ul>
@@ -69,3 +161,17 @@
     <% } %>
   <% } %>
 </div>
+
+<!-- ================= View Details side drawer ================= -->
+<div id="userDetailOverlay" class="vn-drawer-overlay"></div>
+<div id="userDetailDrawer" class="vn-drawer" aria-hidden="true">
+  <div class="vn-drawer-header">
+    <h2 class="h5 mb-0">Prediction Details</h2>
+    <button type="button" id="userDetailCloseBtn" class="btn-close" aria-label="Close"></button>
+  </div>
+  <div id="userDetailContent" class="vn-drawer-body">
+    <p class="text-center small" style="color: var(--vn-ink-muted);">Loading&hellip;</p>
+  </div>
+</div>
+
+<script src="<%= url('/js/admin-users.js') %>"></script>

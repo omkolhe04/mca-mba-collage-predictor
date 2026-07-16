@@ -42,6 +42,25 @@ async function countAll() {
 }
 
 /**
+ * Users whose CURRENT prediction used this specific exam — the
+ * correct, exam-scoped version of countAll() above. Under the
+ * "one prediction per mobile number" model, a user's single
+ * prediction IS their exam choice, so this is a straightforward
+ * count of distinct user_ids on the predictions table for that
+ * exam, not an approximation.
+ */
+async function countByExamType(examTypeId) {
+  const result = await supabase
+    .from('predictions')
+    .select('user_id', { count: 'exact', head: true })
+    .eq('exam_type_id', examTypeId);
+  if (result.error) {
+    throw AppError.internal(`Database error: ${result.error.message}`);
+  }
+  return result.count || 0;
+}
+
+/**
  * Paginated, searchable user list for the Admin Panel.
  */
 async function findAllPaginated({ search, page = 1, pageSize = 20 }) {
@@ -75,6 +94,7 @@ module.exports = {
   findById,
   upsertByMobile,
   countAll,
+  countByExamType,
   findAllPaginated,
   updateActiveStatus,
 };

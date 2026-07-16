@@ -1,0 +1,53 @@
+<div class="vn-drawer-section">
+  <h3 class="vn-drawer-section-title">Personal Details</h3>
+  <dl class="vn-drawer-dl">
+    <dt>Name</dt><dd><%= detail.name %></dd>
+    <dt>Mobile</dt><dd><%= detail.mobile %></dd>
+    <dt>Email</dt><dd><%= detail.email || '—' %></dd>
+    <dt>Gender</dt><dd><%= detail.gender || '—' %></dd>
+    <dt>Category</dt><dd><%= detail.categoryName %></dd>
+  </dl>
+</div>
+
+<div class="vn-drawer-section">
+  <h3 class="vn-drawer-section-title">Prediction Details</h3>
+  <dl class="vn-drawer-dl">
+    <dt>Entrance Exam</dt><dd><%= detail.examTypeName %></dd>
+    <dt>Percentile</dt><dd><%= detail.percentile %></dd>
+    <dt>Home University</dt><dd><%= detail.homeUniversityName %></dd>
+    <dt>Admission University</dt><dd><%= detail.admissionUniversityName %></dd>
+    <dt>Dream College</dt><dd><%= detail.dreamCollegeName %></dd>
+    <dt>Prediction Date</dt>
+    <dd><%= new Date(detail.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) %></dd>
+  </dl>
+</div>
+
+<div class="vn-drawer-section">
+  <h3 class="vn-drawer-section-title">Prediction Summary</h3>
+  <div class="row g-2">
+    <div class="col-6">
+      <div class="vn-drawer-stat">
+        <span class="vn-badge vn-badge-success">Very High</span>
+        <span class="vn-drawer-stat-value"><%= detail.chanceCounts.veryHigh %></span>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="vn-drawer-stat">
+        <span class="vn-badge vn-badge-success">High</span>
+        <span class="vn-drawer-stat-value"><%= detail.chanceCounts.high %></span>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="vn-drawer-stat">
+        <span class="vn-badge vn-badge-warning">Moderate</span>
+        <span class="vn-drawer-stat-value"><%= detail.chanceCounts.moderate %></span>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="vn-drawer-stat">
+        <span class="vn-badge vn-badge-danger">Low</span>
+        <span class="vn-drawer-stat-value"><%= detail.chanceCounts.low %></span>
+      </div>
+    </div>
+  </div>
+</div>

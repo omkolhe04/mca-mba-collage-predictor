@@ -42,7 +42,7 @@
           <tr>
             <th>Code</th>
             <th>Name</th>
-            <th>City</th>
+            <th>University</th>
             <th>Status</th>
             <th></th>
           </tr>
@@ -52,7 +52,7 @@
             <tr>
               <td><%= college.college_code %></td>
               <td><%= college.name %></td>
-              <td><%= college.city || '—' %></td>
+              <td><%= college.university_short_name || '—' %></td>
               <td>
                 <% if (college.is_active) { %>
                   <span class="vn-badge vn-badge-success">Active</span>

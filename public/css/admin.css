@@ -155,3 +155,114 @@
     white-space: nowrap;
   }
 }
+
+/* ---------------------------------------------------------
+   Side drawer — "View Details" for a user's prediction.
+   Slides in from the right over a dimmed overlay.
+   --------------------------------------------------------- */
+.vn-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 250ms ease;
+  z-index: 1040;
+}
+
+.vn-drawer-overlay-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.vn-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: min(420px, 100vw);
+  background: var(--vn-white);
+  box-shadow: -8px 0 30px rgba(15, 23, 42, 0.15);
+  transform: translateX(100%);
+  transition: transform 300ms ease;
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+}
+
+.vn-drawer-open {
+  transform: translateX(0);
+}
+
+.vn-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.25rem;
+  border-bottom: 1px solid var(--vn-border);
+  flex-shrink: 0;
+}
+
+.vn-drawer-body {
+  padding: 1.25rem;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.vn-drawer-section {
+  margin-bottom: 1.5rem;
+}
+
+.vn-drawer-section-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--vn-ink-muted);
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--vn-border);
+}
+
+.vn-drawer-dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem 0.75rem;
+  margin: 0;
+}
+
+.vn-drawer-dl dt {
+  font-size: 0.78rem;
+  color: var(--vn-ink-muted);
+  font-weight: 500;
+}
+
+.vn-drawer-dl dd {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--vn-ink);
+}
+
+.vn-drawer-stat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.75rem;
+  background: var(--vn-bg-subtle);
+  border-radius: var(--vn-radius-sm);
+}
+
+.vn-drawer-stat-value {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* Sticky table header — keeps column labels visible while
+   scrolling a long, filtered users list. */
+.vn-sticky-header-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: var(--vn-white);
+  z-index: 1;
+}

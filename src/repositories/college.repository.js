@@ -91,7 +91,7 @@ async function countAll(examTypeId) {
 async function findAllPaginated({ examTypeId, search, page = 1, pageSize = 20 }) {
   let query = supabase
     .from('colleges')
-    .select('id, college_code, name, city, is_active', { count: 'exact' })
+    .select('id, college_code, name, city, university_id, is_active', { count: 'exact' })
     .eq('exam_type_id', examTypeId)
     .order('name', { ascending: true });
 
@@ -107,7 +107,29 @@ async function findAllPaginated({ examTypeId, search, page = 1, pageSize = 20 })
   if (result.error) {
     throw AppError.internal(`Database error: ${result.error.message}`);
   }
-  return { rows: result.data || [], total: result.count || 0 };
+
+  const rows = result.data || [];
+
+  // Batch-resolve university short names in one small query (the
+  // universities table is tiny) rather than one query per row.
+  const universityIds = [...new Set(rows.map((r) => r.university_id).filter(Boolean))];
+  let universitiesById = new Map();
+  if (universityIds.length > 0) {
+    const uniResult = await supabase.from('universities').select('id, name, short_name').in('id', universityIds);
+    if (uniResult.error) {
+      throw AppError.internal(`Database error: ${uniResult.error.message}`);
+    }
+    universitiesById = new Map((uniResult.data || []).map((u) => [u.id, u]));
+  }
+
+  const mapped = rows.map((row) => ({
+    ...row,
+    university_short_name: universitiesById.get(row.university_id)?.short_name ||
+      universitiesById.get(row.university_id)?.name ||
+      null,
+  }));
+
+  return { rows: mapped, total: result.count || 0 };
 }
 
 async function create(collegeData) {

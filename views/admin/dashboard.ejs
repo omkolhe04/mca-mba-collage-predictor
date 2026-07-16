@@ -15,50 +15,97 @@
   <% }) %>
 </ul>
 
+<!-- ================= Stat cards ================= -->
 <div class="row g-3 mb-4">
-  <div class="col-12 col-sm-4">
+  <div class="col-6 col-lg-3">
     <div class="vn-stat-card">
       <p class="small mb-1" style="color: var(--vn-ink-muted);">Total Colleges</p>
       <div class="vn-stat-value"><%= stats.totalColleges %></div>
     </div>
   </div>
-  <div class="col-12 col-sm-4">
+  <div class="col-6 col-lg-3">
     <div class="vn-stat-card">
-      <p class="small mb-1" style="color: var(--vn-ink-muted);">Total Users <span class="text-muted">(all exams)</span></p>
+      <p class="small mb-1" style="color: var(--vn-ink-muted);">Total Users</p>
       <div class="vn-stat-value"><%= stats.totalUsers %></div>
     </div>
   </div>
-  <div class="col-12 col-sm-4">
+  <div class="col-6 col-lg-3">
     <div class="vn-stat-card">
       <p class="small mb-1" style="color: var(--vn-ink-muted);">Total Predictions</p>
       <div class="vn-stat-value"><%= stats.totalPredictions %></div>
     </div>
   </div>
-</div>
-
-<div class="row g-3 mb-4">
-  <div class="col-12 col-lg-7">
-    <div class="vn-card">
-      <h2 class="h6 mb-3">Predictions — Last 14 Days</h2>
-      <canvas id="dailyChart" height="180"></canvas>
+  <div class="col-6 col-lg-3">
+    <div class="vn-stat-card">
+      <p class="small mb-1" style="color: var(--vn-ink-muted);">Average Percentile</p>
+      <div class="vn-stat-value"><%= stats.averagePercentile %></div>
     </div>
   </div>
-  <div class="col-12 col-lg-5">
+  <div class="col-6 col-lg-4">
+    <div class="vn-stat-card">
+      <p class="small mb-1" style="color: var(--vn-ink-muted);">Today's Predictions</p>
+      <div class="vn-stat-value"><%= stats.todayPredictions %></div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-4">
+    <div class="vn-stat-card">
+      <p class="small mb-1" style="color: var(--vn-ink-muted);">Last 7 Days</p>
+      <div class="vn-stat-value"><%= stats.last7DaysPredictions %></div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-4">
+    <div class="vn-stat-card">
+      <p class="small mb-1" style="color: var(--vn-ink-muted);">Last 30 Days</p>
+      <div class="vn-stat-value"><%= stats.last30DaysPredictions %></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Prediction trend (full width) ================= -->
+<div class="vn-card mb-4">
+  <h2 class="h6 mb-3">Prediction Trend — Last 30 Days</h2>
+  <canvas id="dailyChart" height="90"></canvas>
+</div>
+
+<!-- ================= Distribution charts ================= -->
+<div class="row g-3 mb-4">
+  <div class="col-12 col-lg-6">
     <div class="vn-card">
-      <h2 class="h6 mb-3">Predictions by Category</h2>
+      <h2 class="h6 mb-3">University Distribution</h2>
+      <% if (!stats.universityDistribution.length) { %>
+        <p class="small mb-0" style="color: var(--vn-ink-muted);">No predictions submitted yet.</p>
+      <% } else { %>
+        <canvas id="universityChart" height="200"></canvas>
+      <% } %>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="vn-card">
+      <h2 class="h6 mb-3">Exam Distribution</h2>
+      <% if (!stats.examDistribution.length) { %>
+        <p class="small mb-0" style="color: var(--vn-ink-muted);">No predictions submitted yet.</p>
+      <% } else { %>
+        <canvas id="examChart" height="200"></canvas>
+      <% } %>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="vn-card">
+      <h2 class="h6 mb-3">Category Distribution</h2>
       <% if (!stats.categoryBreakdown.length) { %>
         <p class="small mb-0" style="color: var(--vn-ink-muted);">No predictions submitted yet.</p>
       <% } else { %>
-        <table class="table table-sm mb-0">
-          <tbody>
-            <% stats.categoryBreakdown.forEach(function (row) { %>
-              <tr>
-                <td><%= row.category %></td>
-                <td class="text-end fw-semibold"><%= row.count %></td>
-              </tr>
-            <% }) %>
-          </tbody>
-        </table>
+        <canvas id="categoryChart" height="200"></canvas>
+      <% } %>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="vn-card">
+      <h2 class="h6 mb-3">Gender Distribution</h2>
+      <% if (!stats.genderDistribution.length) { %>
+        <p class="small mb-0" style="color: var(--vn-ink-muted);">No predictions submitted yet.</p>
+      <% } else { %>
+        <canvas id="genderChart" height="200"></canvas>
       <% } %>
     </div>
   </div>
@@ -96,26 +143,75 @@
 
 <script>
   (function () {
+    const palette = ['#1E5AA8', '#5BD066', '#F59E0B', '#EF4444', '#8B5CF6', '#0EA5E9', '#EC4899'];
+
     const dailyData = <%- JSON.stringify(stats.dailyCounts) %>;
-    const ctx = document.getElementById('dailyChart');
-    if (!ctx) return;
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: dailyData.map((d) => d.date.slice(5)), // MM-DD
-        datasets: [
-          {
-            label: 'Predictions',
-            data: dailyData.map((d) => d.count),
-            backgroundColor: '#1E5AA8',
-            borderRadius: 4,
-          },
-        ],
-      },
-      options: {
-        plugins: { legend: { display: false } },
-        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
-      },
-    });
+    const dailyCtx = document.getElementById('dailyChart');
+    if (dailyCtx) {
+      new Chart(dailyCtx, {
+        type: 'bar',
+        data: {
+          labels: dailyData.map((d) => d.date.slice(5)),
+          datasets: [{ label: 'Predictions', data: dailyData.map((d) => d.count), backgroundColor: '#1E5AA8', borderRadius: 4 }],
+        },
+        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } },
+      });
+    }
+
+    const universityData = <%- JSON.stringify(stats.universityDistribution) %>;
+    const universityCtx = document.getElementById('universityChart');
+    if (universityCtx) {
+      new Chart(universityCtx, {
+        type: 'bar',
+        data: {
+          labels: universityData.map((d) => d.university),
+          datasets: [{ label: 'Predictions', data: universityData.map((d) => d.count), backgroundColor: '#1E5AA8', borderRadius: 4 }],
+        },
+        options: {
+          indexAxis: 'y',
+          plugins: { legend: { display: false } },
+          scales: { x: { beginAtZero: true, ticks: { precision: 0 } } },
+        },
+      });
+    }
+
+    const examData = <%- JSON.stringify(stats.examDistribution) %>;
+    const examCtx = document.getElementById('examChart');
+    if (examCtx) {
+      new Chart(examCtx, {
+        type: 'doughnut',
+        data: {
+          labels: examData.map((d) => d.exam),
+          datasets: [{ data: examData.map((d) => d.count), backgroundColor: palette }],
+        },
+        options: { plugins: { legend: { position: 'bottom' } } },
+      });
+    }
+
+    const categoryData = <%- JSON.stringify(stats.categoryBreakdown) %>;
+    const categoryCtx = document.getElementById('categoryChart');
+    if (categoryCtx) {
+      new Chart(categoryCtx, {
+        type: 'bar',
+        data: {
+          labels: categoryData.map((d) => d.category),
+          datasets: [{ label: 'Predictions', data: categoryData.map((d) => d.count), backgroundColor: '#5BD066', borderRadius: 4 }],
+        },
+        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } },
+      });
+    }
+
+    const genderData = <%- JSON.stringify(stats.genderDistribution) %>;
+    const genderCtx = document.getElementById('genderChart');
+    if (genderCtx) {
+      new Chart(genderCtx, {
+        type: 'doughnut',
+        data: {
+          labels: genderData.map((d) => d.gender),
+          datasets: [{ data: genderData.map((d) => d.count), backgroundColor: palette }],
+        },
+        options: { plugins: { legend: { position: 'bottom' } } },
+      });
+    }
   })();
 </script>

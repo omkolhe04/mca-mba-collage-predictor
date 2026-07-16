@@ -102,6 +102,8 @@ router.post('/import/:id/delete', asyncHandler(adminImportController.deleteBatch
 router.post('/import/reset-all', asyncHandler(adminImportController.resetData));
 
 router.get('/users', asyncHandler(adminUserController.list));
+router.get('/users/export.csv', asyncHandler(adminUserController.exportCsv));
+router.get('/users/predictions/:predictionId/detail', asyncHandler(adminUserController.detailPartial));
 router.get('/users/:id', asyncHandler(adminUserController.detail));
 router.post('/users/:id/toggle-active', asyncHandler(adminUserController.toggleActive));
 
