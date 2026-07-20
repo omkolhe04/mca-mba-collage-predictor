@@ -50,6 +50,13 @@ async function showEditForm(req, res) {
     universities: lookups.universities,
     college,
     errors: {},
+    // Carried through as hidden form fields so "Save Changes"
+    // can return to the exact page/search/exam the admin was on
+    // - editing a college on page 18 of a filtered list should
+    // land back on page 18, not silently reset to page 1.
+    returnPage: req.query.returnPage || '1',
+    returnSearch: req.query.returnSearch || '',
+    returnExam: req.query.returnExam || '',
     ...extras,
   });
 }
@@ -57,18 +64,34 @@ async function showEditForm(req, res) {
 async function update(req, res) {
   const updatedCollege = await adminCollegeService.updateCollege(req.params.id, req.body);
   const examType = await examTypeRepository.findById(updatedCollege.exam_type_id);
-  const examParam = examType ? `?exam=${encodeURIComponent(examType.code)}` : '';
-  res.redirect(url(`/admin/colleges${examParam}`));
+  const examCode = req.body.returnExam || (examType ? examType.code : '');
+
+  const params = new URLSearchParams();
+  if (examCode) params.set('exam', examCode);
+  if (req.body.returnPage) params.set('page', req.body.returnPage);
+  if (req.body.returnSearch) params.set('search', req.body.returnSearch);
+
+  const query = params.toString();
+  res.redirect(url(`/admin/colleges${query ? '?' + query : ''}`));
+}
+
+function buildReturnQuery(body) {
+  const params = new URLSearchParams();
+  if (body.returnPage) params.set('returnPage', body.returnPage);
+  if (body.returnSearch) params.set('returnSearch', body.returnSearch);
+  if (body.returnExam) params.set('returnExam', body.returnExam);
+  const query = params.toString();
+  return query ? `?${query}` : '';
 }
 
 async function addPlacement(req, res) {
   await adminCollegeService.addOrUpdatePlacement(req.params.id, req.body);
-  res.redirect(url(`/admin/colleges/${req.params.id}/edit`));
+  res.redirect(url(`/admin/colleges/${req.params.id}/edit${buildReturnQuery(req.body)}`));
 }
 
 async function addFee(req, res) {
   await adminCollegeService.addOrUpdateFee(req.params.id, req.body);
-  res.redirect(url(`/admin/colleges/${req.params.id}/edit`));
+  res.redirect(url(`/admin/colleges/${req.params.id}/edit${buildReturnQuery(req.body)}`));
 }
 
 module.exports = { list, showCreateForm, create, showEditForm, update, addPlacement, addFee };
