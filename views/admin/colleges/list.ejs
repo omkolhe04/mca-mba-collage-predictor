@@ -61,7 +61,7 @@
                 <% } %>
               </td>
               <td class="text-end">
-                <a href="<%= url('/admin/colleges/' + college.id + '/edit') %>" class="btn btn-sm btn-vn-outline">Edit</a>
+                <a href="<%= url('/admin/colleges/' + college.id + '/edit?returnPage=' + page + '&returnSearch=' + encodeURIComponent(search) + '&returnExam=' + examType.code) %>" class="btn btn-sm btn-vn-outline">Edit</a>
               </td>
             </tr>
           <% }) %>
