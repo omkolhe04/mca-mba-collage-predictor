@@ -11,6 +11,11 @@
 </div>
 
 <form action="<%= url(mode === 'create' ? '/admin/colleges' : '/admin/colleges/' + college.id) %>" method="POST" novalidate>
+  <% if (mode === 'edit') { %>
+    <input type="hidden" name="returnPage" value="<%= returnPage %>" />
+    <input type="hidden" name="returnSearch" value="<%= returnSearch %>" />
+    <input type="hidden" name="returnExam" value="<%= returnExam %>" />
+  <% } %>
   <div class="vn-card mb-3">
     <h2 class="h6 mb-3">Basic Details</h2>
     <div class="row g-3">
@@ -181,6 +186,9 @@
       Add or update a year — submitting the same academic year again updates that row instead of duplicating it.
     </p>
     <form action="<%= url('/admin/colleges/' + college.id + '/placements') %>" method="POST">
+      <input type="hidden" name="returnPage" value="<%= returnPage %>" />
+      <input type="hidden" name="returnSearch" value="<%= returnSearch %>" />
+      <input type="hidden" name="returnExam" value="<%= returnExam %>" />
       <div class="row g-2">
         <div class="col-6 col-sm-3">
           <input type="text" class="form-control form-control-sm" name="academicYear" placeholder="2025-26" required />
@@ -237,6 +245,9 @@
       Leave category as "All Categories" for the standard fee, or pick a specific category (e.g. TFWS) for a different rate.
     </p>
     <form action="<%= url('/admin/colleges/' + college.id + '/fees') %>" method="POST">
+      <input type="hidden" name="returnPage" value="<%= returnPage %>" />
+      <input type="hidden" name="returnSearch" value="<%= returnSearch %>" />
+      <input type="hidden" name="returnExam" value="<%= returnExam %>" />
       <div class="row g-2">
         <div class="col-6 col-sm-3">
           <select class="form-select form-select-sm" name="categoryId">
