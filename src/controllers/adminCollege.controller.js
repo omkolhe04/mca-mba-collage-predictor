@@ -1,6 +1,7 @@
 'use strict';
 
 const adminCollegeService = require('../services/adminCollege.service');
+const examTypeRepository = require('../repositories/examType.repository');
 const { url } = require('../utils/url');
 
 async function list(req, res) {
@@ -25,7 +26,7 @@ async function showCreateForm(req, res) {
 
 async function create(req, res) {
   await adminCollegeService.createCollege(req.body);
-  res.redirect(url('/admin/colleges'));
+  res.redirect(url(`/admin/colleges?exam=${encodeURIComponent(req.body.examTypeCode)}`));
 }
 
 async function showEditForm(req, res) {
@@ -54,8 +55,10 @@ async function showEditForm(req, res) {
 }
 
 async function update(req, res) {
-  await adminCollegeService.updateCollege(req.params.id, req.body);
-  res.redirect(url(`/admin/colleges/${req.params.id}/edit`));
+  const updatedCollege = await adminCollegeService.updateCollege(req.params.id, req.body);
+  const examType = await examTypeRepository.findById(updatedCollege.exam_type_id);
+  const examParam = examType ? `?exam=${encodeURIComponent(examType.code)}` : '';
+  res.redirect(url(`/admin/colleges${examParam}`));
 }
 
 async function addPlacement(req, res) {
